@@ -1,4 +1,4 @@
-// עזרים ליצירת טקסטורות מציור על canvas (שלטים, רשת שער וכו')
+// Helpers for building textures by drawing on a canvas (signs, goal net, etc.)
 import * as THREE from 'three';
 
 export const FONT = '"Rubik", "Segoe UI", Arial, sans-serif';
@@ -15,7 +15,7 @@ export function canvasTexture(width, height, draw) {
   return texture;
 }
 
-// טקסט עם שלט רקע כהה בצבעי הקבוצה
+// Text on a dark club-colored sign background
 export function signTexture(width, height, drawText) {
   return canvasTexture(width, height, (ctx, w, h) => {
     const bg = ctx.createLinearGradient(0, 0, 0, h);
@@ -25,7 +25,17 @@ export function signTexture(width, height, drawText) {
     ctx.fillRect(0, 0, w, h);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.direction = 'rtl';
     drawText(ctx, w, h);
   });
+}
+
+// Draws text, shrinking the font if needed so it fits within maxWidth
+export function fitText(ctx, text, x, y, maxWidth, weight, size) {
+  let s = size;
+  ctx.font = `${weight} ${s}px ${FONT}`;
+  while (ctx.measureText(text).width > maxWidth && s > 10) {
+    s -= 2;
+    ctx.font = `${weight} ${s}px ${FONT}`;
+  }
+  ctx.fillText(text, x, y);
 }

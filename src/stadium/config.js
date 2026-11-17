@@ -1,4 +1,4 @@
-// מידות וצבעים משותפים לכל חלקי האצטדיון. כל המידות במטרים.
+// Shared dimensions and colors for every part of the stadium. All sizes are in meters.
 
 export const COLORS = {
   navy: '#0b1f3a',
@@ -12,31 +12,40 @@ export const COLORS = {
   fog: '#4b3d63',
 };
 
-// מגרש בגודל תקני, עם שוליים של דשא מסביב
+// Seat colors (also used by the legend in the UI)
+export const SEAT_COLORS = {
+  available: '#22c55e',
+  taken: '#e5484d',
+  hover: '#ffd23f',
+};
+
+// Regulation-size pitch with a strip of grass around it
 export const PITCH = { length: 105, width: 68, margin: 6 };
 
-// המרחק בין קו המגרש לשורה הראשונה ביציע
+// Distance from the touchline to the first row of a stand
 export const STAND_GAP = 7;
 
-// כל שורה ביציע: עומק, כמה היא גבוהה מהקודמת, וגובה השורה הראשונה
-export const ROW = { depth: 0.9, rise: 0.42, base: 1.2 };
+// Each row: how deep it is, how much higher than the previous row, and the height of row 1
+export const ROW = { depth: 1.0, rise: 0.5, base: 1.2 };
 
-// רוחב כיסא ורוחב מעבר מדרגות בין גושי כיסאות
-export const SEAT = { spacing: 0.75, aisle: 1.2 };
+// Center-to-center seat spacing, and the width of the stairs between sections
+export const SEAT = { spacing: 1.0, aisle: 1.6 };
 
 const sideZ = PITCH.width / 2 + STAND_GAP;
 const endX = PITCH.length / 2 + STAND_GAP;
 
-// ארבעת היציעים. כל יציע נבנה במערכת צירים מקומית שבה
-// x = לאורך היציע, z = הרחק מהמגרש, ואז מסובב למקומו.
+// The four stands. Each stand is built in its own local space where
+// x = along the stand and z = away from the pitch, then rotated into place.
+// seatsPerBlock × blocks = seats in one row; blocks are lettered A, B, C...
 export const STANDS = [
   {
     id: 'north',
-    name: 'יציע צפון',
-    rows: 18,
-    blocks: 6,
-    seatsPerBlock: 20,
+    name: 'North Stand',
+    rows: 20,
+    blocks: 4,
+    seatsPerBlock: 22,
     length: 104,
+    price: 85,
     x: 0,
     z: -sideZ,
     rotationY: Math.PI,
@@ -45,33 +54,36 @@ export const STANDS = [
   },
   {
     id: 'south',
-    name: 'יציע דרום',
-    rows: 18,
-    blocks: 6,
-    seatsPerBlock: 20,
+    name: 'South Stand',
+    rows: 20,
+    blocks: 4,
+    seatsPerBlock: 22,
     length: 104,
+    price: 60,
     x: 0,
     z: sideZ,
     rotationY: 0,
   },
   {
     id: 'east',
-    name: 'יציע מזרח',
-    rows: 14,
-    blocks: 4,
-    seatsPerBlock: 18,
+    name: 'East Stand',
+    rows: 16,
+    blocks: 3,
+    seatsPerBlock: 16,
     length: 66,
+    price: 45,
     x: endX,
     z: 0,
     rotationY: Math.PI / 2,
   },
   {
     id: 'west',
-    name: 'יציע מערב',
-    rows: 14,
-    blocks: 4,
-    seatsPerBlock: 18,
+    name: 'West Stand',
+    rows: 16,
+    blocks: 3,
+    seatsPerBlock: 16,
     length: 66,
+    price: 45,
     x: -endX,
     z: 0,
     rotationY: -Math.PI / 2,

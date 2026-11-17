@@ -1,12 +1,13 @@
-// ארבעת היציעים: מדרגות בטון, קיר קדמי בצבעי הקבוצה, מעברי מדרגות,
-// גג ליציע המרכזי ולוח תוצאות. הכיסאות עצמם יתווספו ב-seats.js.
+// The four stands: stepped concrete tiers, club-colored front wall, stairs between
+// sections, a roof over the main stand and a scoreboard. The seats live in seats.js.
 import * as THREE from 'three';
 import { COLORS, ROW, SEAT, STANDS } from './config.js';
-import { signTexture, FONT } from './textures.js';
+import { signTexture, fitText, FONT } from './textures.js';
 
 const BACK_WALL = 3.2;
 
-// מיקומי הכיסאות והמעברים לאורך שורה (ציר x המקומי של היציע)
+// Seat and aisle positions along one row (the stand's local x axis), left to right
+// as seen by a fan sitting in the stand and facing the pitch.
 export function rowLayout(stand) {
   const blockWidth = stand.seatsPerBlock * SEAT.spacing;
   const total = stand.blocks * blockWidth + (stand.blocks - 1) * SEAT.aisle;
@@ -24,7 +25,7 @@ export function rowLayout(stand) {
   return { seats, aisles, total };
 }
 
-// גובה ומיקום (מקדימה) של משטח השורה
+// Height and front edge of a row's floor (row index starts at 0)
 export function treadPosition(row) {
   return { y: ROW.base + row * ROW.rise, z: row * ROW.depth };
 }
@@ -35,11 +36,11 @@ export function standMetrics(stand) {
   return { back, topTread, wallTop: topTread + BACK_WALL };
 }
 
-export function createStands() {
+export function createStands({ match } = {}) {
   const mats = createMaterials();
   const group = new THREE.Group();
   group.name = 'stands';
-  for (const stand of STANDS) group.add(createStand(stand, mats));
+  for (const stand of STANDS) group.add(createStand(stand, mats, match));
   return group;
 }
 
@@ -62,7 +63,7 @@ function createMaterials() {
   };
 }
 
-// פרופיל המדרגות בחתך צד: (אופקי = הרחק מהמגרש, אנכי = גובה)
+// Side profile of the tiers: horizontal = away from the pitch, vertical = height
 function standProfile(rows) {
   const { depth: d, rise: r, base: b } = ROW;
   const shape = new THREE.Shape();
@@ -82,7 +83,7 @@ function standProfile(rows) {
   return shape;
 }
 
-function createStand(stand, mats) {
+function createStand(stand, mats, match) {
   const g = new THREE.Group();
   g.name = stand.id;
   g.position.set(stand.x, 0, stand.z);
@@ -91,7 +92,7 @@ function createStand(stand, mats) {
   const L = stand.length;
   const { back, topTread, wallTop } = standMetrics(stand);
 
-  // גוף היציע: "שולפים" את הפרופיל לאורך היציע
+  // Stand body: the profile is extruded along the length of the stand
   const bodyGeo = new THREE.ExtrudeGeometry(standProfile(stand.rows), { depth: L, bevelEnabled: false });
   bodyGeo.rotateY(-Math.PI / 2);
   bodyGeo.translate(L / 2, 0, 0);
@@ -100,7 +101,7 @@ function createStand(stand, mats) {
   body.receiveShadow = true;
   g.add(body);
 
-  // קיר קדמי כחול עם פס זהב
+  // Navy front wall with a gold stripe
   const front = new THREE.Mesh(new THREE.BoxGeometry(L, ROW.base, 0.2), mats.navy);
   front.position.set(0, ROW.base / 2, -0.1);
   front.receiveShadow = true;
@@ -108,7 +109,7 @@ function createStand(stand, mats) {
   stripe.position.set(0, ROW.base - 0.1, -0.1);
   g.add(front, stripe);
 
-  // מעברי מדרגות בהירים בין גושי הכיסאות
+  // Light-colored stairs between seating sections
   const { aisles } = rowLayout(stand);
   const aisleMesh = new THREE.InstancedMesh(
     new THREE.BoxGeometry(SEAT.aisle * 0.8, 0.05, ROW.depth),
@@ -127,7 +128,7 @@ function createStand(stand, mats) {
   aisleMesh.receiveShadow = true;
   g.add(aisleMesh);
 
-  // קיר אחורי: פס כחול מבפנים ומבחוץ
+  // Back wall: navy band on the inside and outside
   const band = new THREE.Mesh(new THREE.PlaneGeometry(L, BACK_WALL), mats.navy);
   band.rotation.y = Math.PI;
   band.position.set(0, topTread + BACK_WALL / 2, back - 0.01);
@@ -139,15 +140,15 @@ function createStand(stand, mats) {
 
   if (stand.sign) g.add(createSign(L * 0.5, back, topTread));
   if (stand.roof) g.add(createRoof(L, mats, back, wallTop));
-  if (stand.scoreboard) g.add(createScoreboard(mats, back, wallTop));
+  if (stand.scoreboard) g.add(createScoreboard(mats, back, wallTop, match));
   return g;
 }
 
 function createSign(width, back, topTread) {
   const tex = signTexture(2048, 128, (ctx, w, h) => {
-    ctx.font = `800 86px ${FONT}`;
+    ctx.font = `800 80px ${FONT}`;
     ctx.fillStyle = COLORS.gold;
-    ctx.fillText('★  כוכבי סהר  ★', w / 2, h / 2 + 4);
+    ctx.fillText('★  SAHAR STARS  ★', w / 2, h / 2 + 4);
   });
   const sign = new THREE.Mesh(
     new THREE.PlaneGeometry(width, (width * 128) / 2048),
@@ -166,7 +167,7 @@ function createRoof(standLength, mats, back, wallTop) {
 
   const roof = new THREE.Group();
   roof.position.set(0, y, back + 1.4 - depth / 2);
-  roof.rotation.x = 0.08; // החזית מעט גבוהה יותר
+  roof.rotation.x = 0.08; // the front edge sits slightly higher
 
   const slab = new THREE.Mesh(new THREE.BoxGeometry(L, 0.35, depth), mats.roof);
   slab.castShadow = true;
@@ -175,7 +176,7 @@ function createRoof(standLength, mats, back, wallTop) {
   edge.position.set(0, 0, -depth / 2);
   roof.add(slab, edge);
 
-  // פסי תאורה מתחת לגג
+  // Light strips under the roof
   const lampGeo = new THREE.BoxGeometry(1.6, 0.12, 0.5);
   for (let x = -L / 2 + 4; x <= L / 2 - 4; x += 8) {
     const lamp = new THREE.Mesh(lampGeo, mats.lamp);
@@ -184,7 +185,7 @@ function createRoof(standLength, mats, back, wallTop) {
   }
   g.add(roof);
 
-  // עמודים מאחורי היציע
+  // Columns behind the stand
   const colH = y + 0.4;
   const colGeo = new THREE.CylinderGeometry(0.28, 0.35, colH, 8);
   for (let k = 0; k <= 7; k++) {
@@ -196,22 +197,31 @@ function createRoof(standLength, mats, back, wallTop) {
   return g;
 }
 
-function createScoreboard(mats, back, wallTop) {
+function createScoreboard(mats, back, wallTop, match) {
   const g = new THREE.Group();
   const W = 18;
   const H = 6;
   const y = wallTop + 1.4 + H / 2;
 
+  const home = (match?.home ?? 'Sahar Stars').toUpperCase();
+  const away = (match?.away ?? 'Visitors').toUpperCase();
+
   const tex = signTexture(1024, 342, (ctx, w, h) => {
     ctx.strokeStyle = COLORS.gold;
     ctx.lineWidth = 8;
     ctx.strokeRect(10, 10, w - 20, h - 20);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `800 104px ${FONT}`;
-    ctx.fillText('זירת הלהבה', w / 2, h * 0.42);
     ctx.fillStyle = COLORS.gold;
-    ctx.font = `700 52px ${FONT}`;
-    ctx.fillText('ברוכים הבאים · כוכבי סהר', w / 2, h * 0.75);
+    ctx.font = `700 38px ${FONT}`;
+    ctx.fillText('FLAME ARENA', w / 2, h * 0.2);
+    ctx.fillStyle = '#ffffff';
+    fitText(ctx, home, w * 0.26, h * 0.52, w * 0.4, 800, 64);
+    fitText(ctx, away, w * 0.74, h * 0.52, w * 0.4, 800, 64);
+    ctx.fillStyle = COLORS.gold;
+    ctx.font = `800 52px ${FONT}`;
+    ctx.fillText('VS', w / 2, h * 0.52);
+    ctx.fillStyle = '#9fb0cc';
+    ctx.font = `500 32px ${FONT}`;
+    ctx.fillText(match?.competition ?? 'Welcome', w / 2, h * 0.8);
   });
 
   const frame = new THREE.Mesh(new THREE.BoxGeometry(W + 0.8, H + 0.8, 0.6), mats.steel);

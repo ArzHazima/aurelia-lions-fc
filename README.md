@@ -1,25 +1,33 @@
-# כוכבי סהר ⭐
+# Sahar Stars FC ⭐
 
-אתר לקבוצת כדורגל בדיונית, עם אצטדיון תלת-ממדי לבחירת מקום ישיבה.
-הכל בדוי: הקבוצה, השחקנים, האצטדיון והיריבות.
+Website for a fictional football club, with a 3D stadium for choosing your seat.
+Everything is made up: the club, players, stadium and opponents.
 
-## הרצה מקומית
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-אחר כך פותחים בדפדפן את http://localhost:5173
+Then open http://localhost:5173 in your browser.
 
-## בנייה לפרסום
+## Regenerate seat data
+
+```bash
+npm run seats
+```
+
+Writes `src/data/seats/<match-id>.json` for every match in `src/data/matches.json`.
+
+## Production build
 
 ```bash
 npm run build
 ```
 
-הקבצים המוכנים נוצרים בתיקייה `dist/`. הם מוגדרים לעלות ל-GitHub Pages תחת `/clubStadiom/` (ההגדרה נמצאת ב-`vite.config.js`).
+The output goes to `dist/` and is configured for GitHub Pages under `/clubStadiom/` (see `vite.config.js`).
 
-## טכנולוגיות
+## Tech
 
-Vite, JavaScript ו-Three.js.
+Vite, JavaScript and Three.js.

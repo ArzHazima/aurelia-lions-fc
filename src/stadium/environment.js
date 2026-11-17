@@ -1,4 +1,4 @@
-// הסביבה שמסביב לאצטדיון: שמיים בשעת ערב, כוכבים, קרקע, רחבה, עצים וגבעות
+// Everything around the stadium: evening sky, stars, ground, plaza, trees and hills
 import * as THREE from 'three';
 import { COLORS } from './config.js';
 import { createRandom } from '../utils/random.js';
@@ -33,7 +33,7 @@ function createSky() {
       varying vec3 vDir;
       void main() {
         float h = vDir.y;
-        // השקיעה חזקה יותר בכיוון מערב
+        // the sunset glow is strongest toward the west
         float sunset = pow(max(dot(normalize(vDir.xz + 1e-4), normalize(vec2(-1.0, -0.35))), 0.0), 3.0);
         vec3 band = mix(pink, glow, sunset);
         vec3 c = mix(horizon, band, smoothstep(-0.02, 0.05, h));
@@ -81,8 +81,8 @@ function createGround() {
     group.add(m);
   };
   flat(new THREE.PlaneGeometry(5000, 5000), '#1d2431', -0.2);
-  flat(new THREE.CircleGeometry(118, 64), '#3a4152', -0.12); // רחבה מסביב
-  flat(new THREE.PlaneGeometry(150, 122), '#2d6c38', -0.05); // דשא בין המגרש ליציעים
+  flat(new THREE.CircleGeometry(120, 64), '#3a4152', -0.12); // plaza around the stadium
+  flat(new THREE.PlaneGeometry(156, 128), '#2d6c38', -0.05); // grass between pitch and stands
   return group;
 }
 
@@ -128,7 +128,7 @@ function createTrees() {
 
   for (let i = 0; i < count; i++) {
     const angle = random() * Math.PI * 2;
-    const dist = 128 + random() * 140;
+    const dist = 130 + random() * 140;
     const scale = 0.8 + random() * 0.9;
     const x = Math.sin(angle) * dist;
     const z = Math.cos(angle) * dist;

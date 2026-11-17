@@ -1,4 +1,4 @@
-// המגרש: דשא בפסים, קווים לבנים, שערים עם רשת, דגלי קרן ושלטי פרסום מסביב
+// The pitch: striped grass, white lines, goals with nets, corner flags and LED boards
 import * as THREE from 'three';
 import { COLORS, PITCH } from './config.js';
 import { canvasTexture, signTexture, FONT } from './textures.js';
@@ -23,9 +23,9 @@ export function createPitch(maxAnisotropy = 4) {
   return group;
 }
 
-// ---------- הדשא והקווים מצוירים על canvas אחד גדול ----------
+// ---------- Grass and lines are drawn onto one large canvas ----------
 function createPitchTexture() {
-  const S = 16; // פיקסלים למטר
+  const S = 16; // pixels per meter
   const L = PITCH.length;
   const Wd = PITCH.width;
   const W = L + PITCH.margin * 2;
@@ -35,7 +35,7 @@ function createPitchTexture() {
     const X = (m) => (m + W / 2) * S;
     const Y = (m) => (m + H / 2) * S;
 
-    // פסי כיסוח
+    // Mowing stripes
     const stripes = 18;
     const sw = L / stripes;
     for (let i = -2; i < stripes + 2; i++) {
@@ -55,7 +55,7 @@ function createPitchTexture() {
       ctx.fill();
     };
 
-    // קווי חוץ, קו אמצע, עיגול מרכז
+    // Touchlines, halfway line, center circle
     ctx.strokeRect(X(-hl), Y(-hw), L * S, Wd * S);
     ctx.beginPath();
     ctx.moveTo(X(0), Y(-hw));
@@ -66,7 +66,7 @@ function createPitchTexture() {
     ctx.stroke();
     dot(X(0), Y(0), 0.3 * S);
 
-    // רחבות עונשין, רחבות שער, נקודות פנדל וקשתות
+    // Penalty areas, goal areas, penalty spots and arcs
     for (const side of [-1, 1]) {
       const gx = side * hl;
       const box = (depth, width) => {
@@ -86,7 +86,7 @@ function createPitchTexture() {
       ctx.stroke();
     }
 
-    // קשתות קרן (רק החלק שבתוך המגרש)
+    // Corner arcs (only the part inside the pitch)
     ctx.save();
     ctx.beginPath();
     ctx.rect(X(-hl), Y(-hw), L * S, Wd * S);
@@ -102,7 +102,7 @@ function createPitchTexture() {
   });
 }
 
-// ---------- שער ----------
+// ---------- Goal ----------
 function scaleUV(geometry, sx, sy) {
   const uv = geometry.attributes.uv;
   for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * sx, uv.getY(i) * sy);
@@ -122,7 +122,7 @@ function netTexture() {
 function createGoal(side) {
   const goal = new THREE.Group();
   goal.position.x = side * (PITCH.length / 2);
-  goal.rotation.y = side > 0 ? 0 : Math.PI; // הרשת תמיד בצד שמחוץ למגרש
+  goal.rotation.y = side > 0 ? 0 : Math.PI; // the net always sits outside the pitch
 
   const w = 7.32;
   const h = 2.44;
@@ -139,13 +139,13 @@ function createGoal(side) {
     goal.add(m);
   };
 
-  // קורות ומשקוף
+  // Posts and crossbar
   const upright = new THREE.BoxGeometry(t, h, t);
   add(upright, 0, h / 2, -w / 2);
   add(upright, 0, h / 2, w / 2);
   add(new THREE.BoxGeometry(t, t, w + t), 0, h, 0);
 
-  // שלד אחורי דק
+  // Thin back frame
   const thin = t * 0.5;
   add(new THREE.BoxGeometry(thin, thin, w), depth, thin / 2, 0);
   add(new THREE.BoxGeometry(thin, thin, w), depth / 2, h, 0);
@@ -156,7 +156,7 @@ function createGoal(side) {
     add(new THREE.BoxGeometry(thin, slopeLen, thin), depth * 0.75, h / 2, z, slopeAngle);
   }
 
-  // רשת
+  // Net
   const netMat = new THREE.MeshBasicMaterial({
     map: netTexture(),
     transparent: true,
@@ -192,7 +192,7 @@ function createGoal(side) {
   return goal;
 }
 
-// ---------- דגלי קרן ----------
+// ---------- Corner flags ----------
 function createCornerFlags() {
   const group = new THREE.Group();
   const poleGeo = new THREE.CylinderGeometry(0.035, 0.035, 1.6, 6);
@@ -215,16 +215,16 @@ function createCornerFlags() {
   return group;
 }
 
-// ---------- שלטי LED סביב המגרש ----------
+// ---------- LED boards around the pitch ----------
 function createAdBoards() {
   const group = new THREE.Group();
   const baseTex = signTexture(1024, 72, (ctx, w, h) => {
-    ctx.font = `800 44px ${FONT}`;
+    ctx.font = `800 40px ${FONT}`;
     ctx.fillStyle = COLORS.gold;
-    ctx.fillText('כוכבי סהר', w * 0.72, h / 2 + 2);
+    ctx.fillText('SAHAR STARS', w * 0.27, h / 2 + 2);
     ctx.fillStyle = '#ffffff';
     ctx.fillText('★', w * 0.5, h / 2 + 2);
-    ctx.fillText('זירת הלהבה', w * 0.28, h / 2 + 2);
+    ctx.fillText('FLAME ARENA', w * 0.73, h / 2 + 2);
   });
   baseTex.wrapS = THREE.RepeatWrapping;
 
@@ -239,7 +239,7 @@ function createAdBoards() {
   for (const seg of segments) {
     const board = new THREE.Group();
     board.position.set(seg.x, 0, seg.z);
-    board.rotation.y = Math.atan2(-seg.x, -seg.z); // פונה למרכז המגרש
+    board.rotation.y = Math.atan2(-seg.x, -seg.z); // face the center of the pitch
 
     const tex = baseTex.clone();
     tex.repeat.set(seg.len / 14, 1);

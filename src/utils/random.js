@@ -1,5 +1,5 @@
-// מחולל מספרים אקראיים "עם זרע" (seed): אותו זרע תמיד נותן אותה סדרה.
-// כך העצים, הגבעות ונתוני הכיסאות נראים זהים בכל טעינה.
+// Seeded random number generator: the same seed always yields the same sequence.
+// This keeps trees, hills and seat data identical on every load.
 export function createRandom(seed = 1) {
   let a = seed >>> 0;
   return function random() {

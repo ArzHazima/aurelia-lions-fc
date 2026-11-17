@@ -1,6 +1,6 @@
-// נתב פשוט מבוסס "#" (hash). למשל: #/stadium/match-1
-// ב-GitHub Pages אין שרת שיודע להפנות כתובות, ולכן hash הוא הפתרון הבטוח.
-// כל עמוד הוא מודול עם פונקציה render(root, params) שיכולה להחזיר פונקציית ניקוי.
+// A tiny hash-based router, e.g. #/stadium/match-1
+// GitHub Pages has no server-side routing, so hash URLs are the safe choice.
+// Each page is a module exporting render(root, params), which may return a cleanup function.
 
 const routes = [
   { path: /^\/$/, page: () => import('./pages/home.js') },
@@ -27,7 +27,7 @@ export function startRouter(outlet) {
     }
 
     const mod = await route.page();
-    if (id !== navId) return; // המשתמש כבר עבר לעמוד אחר בזמן הטעינה
+    if (id !== navId) return; // the user navigated elsewhere while this page was loading
 
     cleanup?.();
     cleanup = null;

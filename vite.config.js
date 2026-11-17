@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 
-// באתר שעולה ל-GitHub Pages הכתובת היא https://<user>.github.io/clubStadiom/
-// לכן בבנייה (build) כל הקבצים צריכים להיטען מתוך /clubStadiom/.
-// בפיתוח מקומי (npm run dev) נשארים על "/" כדי שהכתובת תהיה פשוטה.
-// אם תקרא למאגר ב-GitHub בשם אחר – שנה כאן את REPO_NAME.
+// On GitHub Pages the site lives at https://<user>.github.io/clubStadiom/,
+// so production builds must load every file from /clubStadiom/.
+// Local development (npm run dev) stays on "/" for a simple URL.
+// If you name the GitHub repository differently, change REPO_NAME.
 const REPO_NAME = 'clubStadiom';
 
 export default defineConfig(({ command }) => ({

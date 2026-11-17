@@ -1,7 +1,7 @@
-// ארבעה עמודי תאורה בפינות, עם פנסים זוהרים ו"אלומות אור" שקופות
+// Four corner floodlight towers with glowing lamps and soft translucent light beams
 import * as THREE from 'three';
 
-const TOWER_HEIGHT = 44;
+const TOWER_HEIGHT = 46;
 const CORNERS = [
   [1, 1],
   [1, -1],
@@ -31,27 +31,20 @@ export function createFloodlights() {
   const lampGeo = new THREE.BoxGeometry(1.9, 1.3, 0.3);
 
   for (const [sx, sz] of CORNERS) {
-    const x = sx * 66;
-    const z = sz * 50;
+    const x = sx * 68;
+    const z = sz * 52;
 
     const pole = new THREE.Mesh(poleGeo, poleMat);
     pole.position.set(x, TOWER_HEIGHT / 2, z);
     pole.castShadow = true;
 
-    // ראש העמוד פונה לנקודה על המגרש
+    // The head of the tower aims at a point on the pitch
     const head = new THREE.Group();
     head.position.set(x, TOWER_HEIGHT + 2, z);
     const target = new THREE.Vector3(sx * 14, 0, sz * 10);
     head.lookAt(target);
 
-    const frame = new THREE.Mesh(frameGeo, frameMat);
-    head.add(frame);
-
-    // הילה זוהרת מול הפנסים
-    const halo = new THREE.Sprite(haloMat);
-    halo.scale.setScalar(22);
-    halo.position.set(0, 0, 1.5);
-    head.add(halo);
+    head.add(new THREE.Mesh(frameGeo, frameMat));
     for (let r = 0; r < 3; r++) {
       for (let c = 0; c < 4; c++) {
         const lamp = new THREE.Mesh(lampGeo, lampMat);
@@ -60,12 +53,18 @@ export function createFloodlights() {
       }
     }
 
-    // אלומת האור: חרוט שקוף שהולך ודוהה (נעצר באוויר, לפני הדשא)
+    // Glowing halo in front of the lamps
+    const halo = new THREE.Sprite(haloMat);
+    halo.scale.setScalar(22);
+    halo.position.set(0, 0, 1.5);
+    head.add(halo);
+
+    // Light beam: a translucent cone that fades out before reaching the grass
     const dir = target.clone().sub(head.position);
     const len = dir.length() * 0.75;
     dir.normalize();
     const coneGeo = new THREE.ConeGeometry(len * 0.4, len, 32, 1, true);
-    coneGeo.translate(0, -len / 2, 0); // קודקוד החרוט בנקודה (0,0,0)
+    coneGeo.translate(0, -len / 2, 0); // put the cone's tip at (0,0,0)
     const beam = new THREE.Mesh(coneGeo, beamMat);
     beam.position.copy(head.position);
     beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir);
@@ -76,7 +75,7 @@ export function createFloodlights() {
   return group;
 }
 
-// טקסטורה עגולה שדועכת מהמרכז החוצה – משמשת להילה סביב אור
+// A round texture that fades from the center outwards, used for light halos
 export function glowTexture() {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 128;

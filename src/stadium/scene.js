@@ -1,5 +1,5 @@
-// הבסיס של עולם התלת-ממד: רנדרר, סצנה, מצלמה, תאורה וצללים.
-// מטפל גם בשינוי גודל החלון ובשחרור זיכרון כשעוזבים את העמוד.
+// The foundation of the 3D world: renderer, scene, camera, lights and shadows.
+// Also handles window resizing and freeing GPU memory when leaving the page.
 import * as THREE from 'three';
 import { COLORS } from './config.js';
 
@@ -18,12 +18,12 @@ export function createScene(container) {
   scene.background = new THREE.Color(COLORS.fog);
   scene.fog = new THREE.Fog(COLORS.fog, 280, 950);
 
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.3, 3000);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.2, 3000);
 
-  // ---- תאורה ----
+  // ---- Lights ----
   const hemi = new THREE.HemisphereLight('#8f8fe0', '#2b2233', 1.1);
 
-  // האור הראשי מייצג את פנסי האצטדיון, והוא מטיל צללים
+  // The key light stands in for the floodlights and casts the shadows
   const key = new THREE.DirectionalLight('#fff1dc', 2.0);
   key.position.set(35, 120, 55);
   key.castShadow = true;
@@ -70,7 +70,7 @@ export function createScene(container) {
   return api;
 }
 
-// משחרר מהזיכרון של כרטיס המסך את כל הגיאומטריות, החומרים והטקסטורות
+// Frees every geometry, material and texture from GPU memory
 function disposeObject(root) {
   root.traverse((obj) => {
     obj.geometry?.dispose();
