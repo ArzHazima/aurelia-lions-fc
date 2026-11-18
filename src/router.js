@@ -4,6 +4,7 @@
 
 const routes = [
   { path: /^\/$/, page: () => import('./pages/home.js') },
+  { path: /^\/crests$/, page: () => import('./pages/crests.js') }, // temporary: crest options
   {
     path: /^\/stadium\/([\w-]+)$/,
     page: () => import('./pages/stadium.js'),

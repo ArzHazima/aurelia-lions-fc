@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 300" role="img" aria-label="Aurelia Lions FC crest – classic">
+  <title>Aurelia Lions FC crest – classic</title>
+  <defs>
+    <clipPath id="a-inner"><path d="M110 52 L196 74 V156 C196 212 158 246 110 266 C62 246 24 212 24 156 V74 Z" transform="translate(110 160) scale(0.88) translate(-110 -160)"/></clipPath>
+    <path id="a-ribbon" d="M20 250 Q110 272 200 250"/>
+  </defs>
+  <!-- shield: gold rim, navy line, blue field with stripes -->
+  <path d="M110 52 L196 74 V156 C196 212 158 246 110 266 C62 246 24 212 24 156 V74 Z" fill="#F5B800" stroke="#0B1E4A" stroke-width="3"/>
+  <path d="M110 52 L196 74 V156 C196 212 158 246 110 266 C62 246 24 212 24 156 V74 Z" transform="translate(110 160) scale(0.93) translate(-110 -160)" fill="#0B1E4A"/>
+  <path d="M110 52 L196 74 V156 C196 212 158 246 110 266 C62 246 24 212 24 156 V74 Z" transform="translate(110 160) scale(0.88) translate(-110 -160)" fill="#1E4FD8"/>
+  <g clip-path="url(#a-inner)"><rect x="24" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="44" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="64" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="84" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="104" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="124" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="144" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="164" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/><rect x="184" y="52" width="10" height="216" fill="#3A68E8" opacity="0.35"/></g>
+  <!-- EST / 1924 either side of the lion -->
+  <g font-family="'Arial Black', Arial, Helvetica, sans-serif" font-weight="900" font-size="13" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">
+    <text x="50" y="104">EST.</text><text x="170" y="104">1924</text>
+  </g>
+  <g fill="#F5B800"><polygon points="50,114 51.53,117.9 55.71,118.15 52.47,120.8 53.53,124.85 50,122.6 46.47,124.85 47.53,120.8 44.29,118.15 48.47,117.9"/><polygon points="170,114 171.53,117.9 175.71,118.15 172.47,120.8 173.53,124.85 170,122.6 166.47,124.85 167.53,120.8 164.29,118.15 168.47,117.9"/></g>
+  <g transform="translate(110 160) scale(1.12)">
+  <g stroke-linejoin="round">
+    <polygon points="0,-59.6 7.12,-38.8 19.15,-51.78 20.5,-33.64 38.57,-44.72 31.41,-23.94 48.5,-25.68 38.53,-10.86 59.09,-7.04 41,4 55.15,14.31 38.53,18.86 51.96,35.8 31.41,31.94 36,49.47 20.5,41.64 20.52,63.76 7.12,46.8 0,63.36 -7.12,46.8 -20.52,63.76 -20.5,41.64 -36,49.47 -31.41,31.94 -51.96,35.8 -38.53,18.86 -55.15,14.31 -41,4 -59.09,-7.04 -38.53,-10.86 -48.5,-25.68 -31.41,-23.94 -38.57,-44.72 -20.5,-33.64 -19.15,-51.78 -7.12,-38.8" fill="#F5B800" stroke="#0B1E4A" stroke-width="2.5"/>
+    <g stroke="#C99200" stroke-width="2.2" stroke-linecap="round"><line x1="6.25" y1="-33.42" x2="8.34" y2="-46.23"/><line x1="18" y1="-28.91" x2="24" y2="-40.17"/><line x1="27.58" y1="-20.43" x2="36.77" y2="-28.78"/><line x1="33.83" y1="-9" x2="45.11" y2="-13.44"/><line x1="36" y1="4" x2="48" y2="4"/><line x1="33.83" y1="17" x2="45.11" y2="21.44"/><line x1="27.58" y1="28.43" x2="36.77" y2="36.78"/><line x1="18" y1="36.91" x2="24" y2="48.17"/><line x1="6.25" y1="41.42" x2="8.34" y2="54.23"/><line x1="-6.25" y1="41.42" x2="-8.34" y2="54.23"/><line x1="-18" y1="36.91" x2="-24" y2="48.17"/><line x1="-27.58" y1="28.43" x2="-36.77" y2="36.78"/><line x1="-33.83" y1="17" x2="-45.11" y2="21.44"/><line x1="-36" y1="4" x2="-48" y2="4"/><line x1="-33.83" y1="-9" x2="-45.11" y2="-13.44"/><line x1="-27.58" y1="-20.43" x2="-36.77" y2="-28.78"/><line x1="-18" y1="-28.91" x2="-24" y2="-40.17"/><line x1="-6.25" y1="-33.42" x2="-8.34" y2="-46.23"/></g>
+    <ellipse cx="0" cy="4" rx="38" ry="40" fill="#C99200"/>
+    <!-- ears -->
+    <circle cx="-25" cy="-26" r="10" fill="#F5B800" stroke="#0B1E4A" stroke-width="2"/>
+    <circle cx="25" cy="-26" r="10" fill="#F5B800" stroke="#0B1E4A" stroke-width="2"/>
+    <circle cx="-25" cy="-25" r="4.5" fill="#0B1E4A"/>
+    <circle cx="25" cy="-25" r="4.5" fill="#0B1E4A"/>
+    <!-- face -->
+    <path d="M0 -30 C20 -30 31 -18 30 0 C29 16 19 32 0 38 C-19 32 -29 16 -30 0 C-31 -18 -20 -30 0 -30 Z"
+      fill="#FFD54A" stroke="#0B1E4A" stroke-width="2.5"/>
+    <!-- brow and nose bridge -->
+    <path d="M-20 -8 Q-10 -14 -3 -6 L0 14 L3 -6 Q10 -14 20 -8" fill="none" stroke="#C99200" stroke-width="2.5"/>
+    <path d="M-22 -10 L-6 -6" stroke="#0B1E4A" stroke-width="3" stroke-linecap="round"/>
+    <path d="M22 -10 L6 -6" stroke="#0B1E4A" stroke-width="3" stroke-linecap="round"/>
+    <!-- eyes -->
+    <path d="M-21 -1 Q-14 -8 -6 -1 Q-14 3 -21 -1 Z" fill="#0B1E4A"/>
+    <path d="M21 -1 Q14 -8 6 -1 Q14 3 21 -1 Z" fill="#0B1E4A"/>
+    <circle cx="-12" cy="-2" r="1.6" fill="#FFFFFF"/>
+    <circle cx="12" cy="-2" r="1.6" fill="#FFFFFF"/>
+    <!-- muzzle, nose, mouth -->
+    <ellipse cx="-7" cy="22" rx="9" ry="7.5" fill="#FFE58A"/>
+    <ellipse cx="7" cy="22" rx="9" ry="7.5" fill="#FFE58A"/>
+    <path d="M-8 12 L8 12 L0 21 Z" fill="#0B1E4A" stroke="#0B1E4A" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M0 21 L0 26 M-9 30 L-3 28 L0 26 L3 28 L9 30" fill="none" stroke="#0B1E4A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#C99200">
+      <circle cx="-11" cy="21" r="1.2"/><circle cx="-14" cy="25" r="1.2"/><circle cx="-8" cy="25" r="1.2"/>
+      <circle cx="11" cy="21" r="1.2"/><circle cx="14" cy="25" r="1.2"/><circle cx="8" cy="25" r="1.2"/>
+    </g>
+  </g></g>
+  <!-- crown above the shield -->
+  <g transform="translate(110 56)">
+  <g stroke="#0B1E4A" stroke-width="2.2" stroke-linejoin="round">
+    <path d="M-35 0 L-39 -27.36 L-17.5 -13.299999999999999 L0 -38 L17.5 -13.299999999999999 L39 -27.36 L35 0 Z" fill="#F5B800"/>
+    <rect x="-37" y="-2" width="74" height="10" rx="2" fill="#FFD54A"/>
+    <circle cx="-39" cy="-30.36" r="3.5" fill="#FFFFFF"/>
+    <circle cx="0" cy="-41.5" r="4" fill="#FFFFFF"/>
+    <circle cx="39" cy="-30.36" r="3.5" fill="#FFFFFF"/>
+  </g>
+  <g fill="#1E4FD8"><circle cx="-19.25" cy="3" r="2.6"/><circle cx="0" cy="3" r="3"/><circle cx="19.25" cy="3" r="2.6"/></g></g>
+  <!-- ribbon banner with the club name -->
+  <g stroke="#0B1E4A" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M14 238 L34 236 L34 262 L14 264 L22 251 Z" fill="#C99200"/>
+    <path d="M206 238 L186 236 L186 262 L206 264 L198 251 Z" fill="#C99200"/>
+    <path d="M28 230 Q110 252 192 230 L192 258 Q110 280 28 258 Z" fill="#F5B800"/>
+  </g>
+  <text font-family="'Arial Black', Arial, Helvetica, sans-serif" font-weight="900" font-size="13.5" fill="#0B1E4A" text-anchor="middle" letter-spacing="0.6">
+    <textPath href="#a-ribbon" startOffset="50%">AURELIA LIONS FC</textPath>
+  </text>
+</svg>
