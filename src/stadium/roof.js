@@ -1,12 +1,12 @@
 // The roof: one continuous canopy ring over the whole bowl, open above the pitch.
 // Floodlights are built into its inner edge (a strip of lamps with glowing halos).
-// While choosing seats the roof turns see-through so it never hides the upper tier.
+// While choosing seats the roof fades out completely so it never hides the upper tier.
 import * as THREE from 'three';
 import { COLORS, ROOF, UPPER_BACK } from './config.js';
 import { sweepProfile, ribbon, alongLoop, fillInstances } from './bowl/geometry.js';
 import { canvasTexture, glowTexture } from './textures.js';
 
-const SEE_THROUGH = 0.14;
+const HIDDEN = 0; // roof opacity while choosing seats
 
 export function createRoof() {
   const group = new THREE.Group();
@@ -61,14 +61,12 @@ export function createRoof() {
     },
   );
 
-  // Columns around the outside carrying the roof (stay solid – they never block seats)
+  // Columns around the outside carrying the roof
   const postItems = alongLoop(UPPER_BACK + 1.6, 14);
+  const postMat = new THREE.MeshStandardMaterial({ color: '#59627a', roughness: 0.5, metalness: 0.5, transparent: true });
+  fading.push(postMat);
   const posts = fillInstances(
-    new THREE.InstancedMesh(
-      new THREE.CylinderGeometry(0.35, 0.5, outerY, 8),
-      new THREE.MeshStandardMaterial({ color: '#59627a', roughness: 0.5, metalness: 0.5 }),
-      postItems.length,
-    ),
+    new THREE.InstancedMesh(new THREE.CylinderGeometry(0.35, 0.5, outerY, 8), postMat, postItems.length),
     postItems,
     (o, it) => o.position.set(it.x, outerY / 2, it.z),
   );
@@ -76,8 +74,10 @@ export function createRoof() {
 
   // Floodlights: a strip of lamps under the inner edge, plus soft halos
   const lampItems = alongLoop(inner + 0.9, 3.2);
+  const lampMat = new THREE.MeshBasicMaterial({ color: '#fffaf0', transparent: true });
+  fading.push(lampMat);
   const lamps = fillInstances(
-    new THREE.InstancedMesh(new THREE.BoxGeometry(1.7, 0.3, 0.9), new THREE.MeshBasicMaterial({ color: '#fffaf0' }), lampItems.length),
+    new THREE.InstancedMesh(new THREE.BoxGeometry(1.7, 0.3, 0.9), lampMat, lampItems.length),
     lampItems,
     (o, it) => {
       o.position.set(it.x, yAt(inner + 0.9) - th - 0.3, it.z);
@@ -110,15 +110,24 @@ export function createRoof() {
       m.opacity = o;
       m.depthWrite = o > 0.99;
     }
+    haloMat.opacity = o; // additive glow: never writes depth
+    group.visible = o > 0.005; // fully faded out → don't draw it at all
   }
 
   return {
     group,
     setOpacity,
-    // Fade toward solid (intro / seat view) or see-through (choosing seats)
+    get opacity() {
+      return opacity;
+    },
+    // Fade in (intro / seat view) or out completely (choosing a section or seat)
     update(dt, time, rig) {
-      const target = rig.roofSolid ? 1 : SEE_THROUGH;
-      if (Math.abs(target - opacity) > 0.001) setOpacity(opacity + (target - opacity) * (1 - Math.exp(-dt * 5)));
+      const target = rig.roofSolid ? 1 : HIDDEN;
+      if (Math.abs(target - opacity) < 0.002) {
+        if (opacity !== target) setOpacity(target);
+        return;
+      }
+      setOpacity(opacity + (target - opacity) * (1 - Math.exp(-dt * 4)));
     },
   };
 }

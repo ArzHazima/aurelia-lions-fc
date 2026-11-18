@@ -159,6 +159,7 @@ export function createStadium(container, options = {}) {
     time += dt;
     rig.update(dt);
     for (const a of animated) a.update(dt, time, rig);
+    screens.setOpacity(roof.opacity);
 
     // Hover check: mouse only, at most once per frame, not while dragging
     if (pointerDirty && pointer && pointer.mouse) {

@@ -141,9 +141,10 @@ export function createScreens(match) {
   const scenes = [sceneCrest, sceneScore, sceneMatch];
   let ctx;
   const tex = canvasTexture(512, 288, (c) => (ctx = c));
-  const screenMat = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
-  const frameMat = new THREE.MeshStandardMaterial({ color: '#1b2233', roughness: 0.6, metalness: 0.3 });
-  const cableMat = new THREE.MeshStandardMaterial({ color: '#3a4258' });
+  const screenMat = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, transparent: true });
+  const frameMat = new THREE.MeshStandardMaterial({ color: '#1b2233', roughness: 0.6, metalness: 0.3, transparent: true });
+  const cableMat = new THREE.MeshStandardMaterial({ color: '#3a4258', transparent: true });
+  const fading = [screenMat, frameMat, cableMat];
   const roofUnderside = ROOF.innerY - ROOF.thickness - 0.4;
 
   for (const id of ['nw', 'se']) {
@@ -168,7 +169,16 @@ export function createScreens(match) {
   let acc = 1;
   return {
     group,
+    // The screens hang from the roof, so they fade in and out together with it
+    setOpacity(o) {
+      for (const m of fading) {
+        m.opacity = o;
+        m.depthWrite = o > 0.99;
+      }
+      group.visible = o > 0.005;
+    },
     update(dt, time) {
+      if (!group.visible) return;
       acc += dt;
       if (acc < 1 / FPS) return;
       acc = 0;

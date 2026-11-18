@@ -61,7 +61,9 @@ function createBoards(match) {
   for (const seg of segments) {
     const board = new THREE.Group();
     board.position.set(seg.x, 0, seg.z);
-    board.rotation.y = Math.atan2(-seg.x, -seg.z); // face the center of the pitch
+    // Run parallel to the touchline / goal line and face the pitch.
+    // (Aiming at the center spot made the off-center north boards diagonal.)
+    board.rotation.y = seg.z !== 0 ? (seg.z > 0 ? Math.PI : 0) : seg.x > 0 ? -Math.PI / 2 : Math.PI / 2;
 
     const tex = base.clone(); // shares the canvas, has its own scroll offset
     tex.repeat.set(seg.len / 14, 1);
