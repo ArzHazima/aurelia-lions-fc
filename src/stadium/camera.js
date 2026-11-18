@@ -1,7 +1,9 @@
 // Everything about camera movement:
-// - the opening animation and the overview (orbit with mouse / touch)
-// - the smooth flight from the overview down to a seat, and back again
-// - looking around from the seat by dragging, with angle limits
+//  intro    – opening sweep around the stadium
+//  overview – whole bowl, orbit with mouse/touch, pick a section
+//  section  – close-up of one section, orbit a little, pick a seat
+//  seat     – eye level in the chosen seat, drag to look around (with limits)
+//  flying   – smooth curved flights between all of the above
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -14,15 +16,33 @@ export const easing = {
   inOutSine: (t) => -(Math.cos(Math.PI * t) - 1) / 2,
 };
 
-const OVERVIEW_FOV = 45;
-const SEAT_FOV = 62;
-const EYE_HEIGHT = 1.2; // seated eye height above the row floor
+export const FOV = { overview: 45, section: 50, seat: 62 };
+const EYE_HEIGHT = 1.15; // seated eye height above the row floor
 const YAW_LIMIT = 70 * DEG; // how far you can turn left/right from the seat
 const PITCH_DOWN = -28 * DEG;
-const PITCH_UP = 18 * DEG;
-const PITCH_CENTER = new THREE.Vector3(0, 1, 0);
+const PITCH_UP = 20 * DEG;
+export const PITCH_CENTER = new THREE.Vector3(0, 1, 0);
 
-// Point on a quadratic Bézier curve (used for curved flight paths)
+const ORBIT_LIMITS = {
+  overview: {
+    minDistance: 70,
+    maxDistance: 600,
+    minPolarAngle: 8 * DEG,
+    maxPolarAngle: 76 * DEG,
+    zoomToCursor: false,
+    rotateSpeed: 0.5,
+  },
+  section: {
+    minDistance: 6,
+    maxDistance: 80,
+    minPolarAngle: 10 * DEG,
+    maxPolarAngle: 88 * DEG,
+    zoomToCursor: true,
+    rotateSpeed: 0.4,
+  },
+};
+
+// Point on a quadratic Bézier curve (curved flight paths)
 function bezier(a, b, c, t, out) {
   const u = 1 - t;
   return out
@@ -32,7 +52,7 @@ function bezier(a, b, c, t, out) {
     .addScaledVector(c, t * t);
 }
 
-// Where the camera sits for a given seat: above the seat, slightly toward the pitch
+// Where the camera sits for a seat: above the seat, a touch toward the pitch
 export function seatEye(seat) {
   const forward = new THREE.Vector3(-Math.sin(seat.rotationY), 0, -Math.cos(seat.rotationY));
   return seat.position.clone().add(new THREE.Vector3(0, EYE_HEIGHT, 0)).addScaledVector(forward, 0.05);
@@ -42,10 +62,11 @@ export class CameraRig {
   constructor(camera, domElement) {
     this.camera = camera;
     this.dom = domElement;
-    this.mode = 'idle'; // idle | intro | overview | flying | seat
+    this.mode = 'idle';
+    this.flightTo = null; // destination mode while flying
     this.tween = null;
-    this.look = null; // look-around state while sitting in a seat
-    this.saved = null; // overview camera to return to
+    this.look = null; // look-around state in the seat view
+    this.saved = null; // where to return to after the seat view
     this.drag = null;
 
     this.controls = new OrbitControls(camera, domElement);
@@ -54,14 +75,7 @@ export class CameraRig {
       enableDamping: true,
       dampingFactor: 0.08,
       enablePan: false,
-      zoomToCursor: true, // zoom toward the mouse, so you can zoom into a section
-      maxTargetRadius: 70,
-      rotateSpeed: 0.55,
       zoomSpeed: 0.9,
-      minDistance: 14,
-      maxDistance: 400,
-      minPolarAngle: 8 * DEG,
-      maxPolarAngle: 78 * DEG,
     });
 
     domElement.addEventListener('pointerdown', this.onPointerDown);
@@ -70,31 +84,34 @@ export class CameraRig {
     window.addEventListener('pointercancel', this.onPointerUp);
   }
 
-  // ---------- Overview ----------
+  // Roof is drawn solid in the intro and in the seat view, see-through while choosing
+  get roofSolid() {
+    return this.mode === 'intro' || this.mode === 'seat' || (this.mode === 'flying' && this.flightTo === 'seat');
+  }
 
-  // Overview position, sized so the whole stadium fits (also on narrow phone screens)
+  // ---------- Poses ----------
+
+  // Overview, sized so the whole bowl fits the screen (phones get an end-on view)
   overviewPose() {
     const aspect = this.camera.aspect;
     const portrait = aspect < 0.85;
-    const vHalf = (OVERVIEW_FOV * DEG) / 2;
+    const vHalf = (FOV.overview * DEG) / 2;
     const hHalf = Math.atan(Math.tan(vHalf) * aspect);
-    const el = (portrait ? 60 : 42) * DEG;
-    const halfWidth = portrait ? 56 : 86;
-    const halfDepth = portrait ? 82 : 66;
-    const dist =
-      Math.max(halfWidth / Math.tan(hHalf), (halfDepth * Math.sin(el) + 10) / Math.tan(vHalf)) * 1.05;
+    const el = (portrait ? 62 : 48) * DEG;
+    const halfWidth = portrait ? 80 : 112;
+    const halfDepth = portrait ? 112 : 92;
+    const dist = Math.max(halfWidth / Math.tan(hHalf), (halfDepth * Math.sin(el) + 18) / Math.tan(vHalf));
     return { az: portrait ? Math.PI / 2 : 0, el, dist, target: new THREE.Vector3(0, 0, 0) };
   }
 
-  // Places the camera by angle around (az), angle above the ground (el) and distance
-  applyPose({ az, el, dist, target }) {
+  static positionOf({ az, el, dist, target }) {
     const flat = Math.cos(el) * dist;
-    this.camera.position.set(
-      target.x + flat * Math.sin(az),
-      target.y + Math.sin(el) * dist,
-      target.z + flat * Math.cos(az),
-    );
-    this.camera.lookAt(target);
+    return new THREE.Vector3(target.x + flat * Math.sin(az), target.y + Math.sin(el) * dist, target.z + flat * Math.cos(az));
+  }
+
+  applyPose(pose) {
+    this.camera.position.copy(CameraRig.positionOf(pose));
+    this.camera.lookAt(pose.target);
   }
 
   setFov(fov) {
@@ -102,19 +119,15 @@ export class CameraRig {
     this.camera.updateProjectionMatrix();
   }
 
-  // Opening animation: a low sweep around the stadium that ends in the overview
-  playIntro(duration = 6.5) {
+  // ---------- Intro ----------
+
+  playIntro(duration = 7) {
     const end = this.overviewPose();
-    const start = {
-      az: end.az - Math.PI * 2.1,
-      el: 6 * DEG,
-      dist: end.dist * 1.9,
-      target: new THREE.Vector3(0, 10, 0),
-    };
+    const start = { az: end.az - Math.PI * 2.1, el: 5 * DEG, dist: end.dist * 1.7, target: new THREE.Vector3(0, 18, 0) };
     const target = new THREE.Vector3();
     this.controls.enabled = false;
     this.mode = 'intro';
-    this.setFov(OVERVIEW_FOV);
+    this.setFov(FOV.overview);
 
     return this.animate(duration, (k) => {
       const e = easing.inOutCubic(k);
@@ -124,81 +137,102 @@ export class CameraRig {
         dist: lerp(start.dist, end.dist, e),
         target: target.lerpVectors(start.target, end.target, e),
       });
-    }).then(() => this.enableOrbit(end.target));
+    }).then(() => this.enableOrbit(end.target, 'overview'));
   }
 
   skipIntro() {
     if (this.mode === 'intro' && this.tween) this.tween.elapsed = this.tween.duration;
   }
 
-  enableOrbit(target) {
-    this.mode = 'overview';
+  enableOrbit(target, mode) {
+    this.mode = mode;
+    Object.assign(this.controls, ORBIT_LIMITS[mode]);
     this.controls.target.copy(target);
     this.controls.enabled = true;
     this.controls.update();
+    this.dom.style.cursor = '';
   }
 
-  // ---------- Flying to a seat and back ----------
+  // ---------- Flights ----------
 
-  flyToSeat(seat, duration = 2.2) {
-    if (this.mode !== 'overview') return Promise.resolve(false);
-    this.saved = { position: this.camera.position.clone(), target: this.controls.target.clone() };
-    this.controls.enabled = false;
-    this.mode = 'flying';
-
-    const eye = seatEye(seat);
-    const p0 = this.camera.position.clone();
-    const t0 = this.controls.target.clone();
-    const f0 = this.camera.fov;
-    // Control point: stay fairly high, then swoop down onto the seat
-    const ctrl = p0.clone().lerp(eye, 0.6);
-    ctrl.y = lerp(p0.y, eye.y, 0.2) + 6;
-    const lookPoint = new THREE.Vector3();
-
-    return this.animate(duration, (k) => {
-      const e = easing.inOutCubic(k);
-      bezier(p0, ctrl, eye, e, this.camera.position);
-      this.camera.lookAt(lookPoint.lerpVectors(t0, PITCH_CENTER, e));
-      this.setFov(lerp(f0, SEAT_FOV, e));
-    }).then(() => {
-      this.startSeatLook(eye);
-      return true;
-    });
-  }
-
-  flyBack(duration = 2) {
-    if (this.mode !== 'seat' || !this.saved) return Promise.resolve(false);
-    this.mode = 'flying';
-    this.drag = null;
-
-    const p0 = this.camera.position.clone();
-    const f0 = this.camera.fov;
+  // The point the camera is currently looking at (used as the start of a flight)
+  lookPoint() {
+    if (this.mode === 'overview' || this.mode === 'section') return this.controls.target.clone();
     const dir = new THREE.Vector3();
     this.camera.getWorldDirection(dir);
-    const l0 = p0.clone().addScaledVector(dir, p0.distanceTo(PITCH_CENTER));
-    const { position: p1, target: t1 } = this.saved;
-    const ctrl = p0.clone().lerp(p1, 0.4);
-    ctrl.y = lerp(p0.y, p1.y, 0.8) + 6;
-    const lookPoint = new THREE.Vector3();
+    return this.camera.position.clone().addScaledVector(dir, this.camera.position.distanceTo(PITCH_CENTER));
+  }
+
+  // Curved, eased flight to { position, target, fov, mode }
+  flyTo(dest, duration = 2) {
+    const l0 = this.lookPoint();
+    this.controls.enabled = false;
+    this.drag = null;
+    this.look = null;
+    this.mode = 'flying';
+    this.flightTo = dest.mode;
+
+    const p0 = this.camera.position.clone();
+    const f0 = this.camera.fov;
+    const p1 = dest.position.clone();
+    const l1 = dest.target.clone();
+    // Going down: stay high, then swoop. Going up: rise first, then settle.
+    const down = p1.y < p0.y;
+    const ctrl = p0.clone().lerp(p1, down ? 0.6 : 0.4);
+    ctrl.y = lerp(p0.y, p1.y, down ? 0.2 : 0.8) + 6;
+    const look = new THREE.Vector3();
 
     return this.animate(duration, (k) => {
       const e = easing.inOutCubic(k);
       bezier(p0, ctrl, p1, e, this.camera.position);
-      this.camera.lookAt(lookPoint.lerpVectors(l0, t1, e));
-      this.setFov(lerp(f0, OVERVIEW_FOV, e));
+      this.camera.lookAt(look.lerpVectors(l0, l1, e));
+      this.setFov(lerp(f0, dest.fov, e));
     }).then(() => {
-      this.look = null;
-      this.enableOrbit(t1);
+      this.flightTo = null;
+      if (dest.mode === 'seat') this.startSeatLook(p1, l1);
+      else this.enableOrbit(l1, dest.mode);
       return true;
     });
   }
 
+  flyToOverview() {
+    const pose = this.overviewPose();
+    return this.flyTo({ position: CameraRig.positionOf(pose), target: pose.target, fov: FOV.overview, mode: 'overview' }, 1.8);
+  }
+
+  // In front of the section, over the pitch, looking at its middle
+  flyToSection(section) {
+    const upper = section.tierId === 'upper';
+    const target = section.center.clone().add(new THREE.Vector3(0, 1, 0));
+    const position = section.center
+      .clone()
+      .addScaledVector(section.normal, upper ? -30 : -24)
+      .add(new THREE.Vector3(0, upper ? 7 : 9, 0));
+    return this.flyTo({ position, target, fov: FOV.section, mode: 'section' }, 1.8);
+  }
+
+  flyToSeat(seat) {
+    if (this.mode !== 'overview' && this.mode !== 'section') return Promise.resolve(false);
+    this.saved = {
+      position: this.camera.position.clone(),
+      target: this.controls.target.clone(),
+      fov: this.camera.fov,
+      mode: this.mode,
+    };
+    return this.flyTo({ position: seatEye(seat), target: PITCH_CENTER, fov: FOV.seat, mode: 'seat' }, 2.2);
+  }
+
+  flyBack() {
+    if (this.mode !== 'seat' || !this.saved) return Promise.resolve(false);
+    return this.flyTo(this.saved, 2);
+  }
+
   // ---------- Looking around from the seat ----------
 
-  startSeatLook(eye) {
-    const dir = PITCH_CENTER.clone().sub(eye);
+  startSeatLook(eye, target) {
+    const dir = target.clone().sub(eye);
     this.look = {
-      eye,
+      eye: eye.clone(),
       baseYaw: Math.atan2(dir.x, dir.z),
       basePitch: Math.atan2(dir.y, Math.hypot(dir.x, dir.z)),
       yaw: 0,
@@ -249,7 +283,6 @@ export class CameraRig {
 
   // ---------- Tiny animation engine ----------
 
-  // Calls onUpdate with progress from 0 to 1 over `duration` seconds
   animate(duration, onUpdate) {
     return new Promise((resolve) => {
       this.tween = { elapsed: 0, duration, onUpdate, resolve };
@@ -269,7 +302,7 @@ export class CameraRig {
       }
     } else if (this.mode === 'seat') {
       this.updateSeatLook(dt);
-    } else if (this.mode === 'overview') {
+    } else if (this.mode === 'overview' || this.mode === 'section') {
       this.controls.update();
     }
   }

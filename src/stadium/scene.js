@@ -16,7 +16,7 @@ export function createScene(container) {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(COLORS.fog);
-  scene.fog = new THREE.Fog(COLORS.fog, 280, 950);
+  scene.fog = new THREE.Fog(COLORS.fog, 450, 1400);
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.2, 3000);
 
@@ -25,13 +25,13 @@ export function createScene(container) {
 
   // The key light stands in for the floodlights and casts the shadows
   const key = new THREE.DirectionalLight('#fff1dc', 2.0);
-  key.position.set(35, 120, 55);
+  key.position.set(60, 180, 80);
   key.castShadow = true;
   const shadowSize = isMobile ? 1024 : 2048;
   key.shadow.mapSize.set(shadowSize, shadowSize);
-  Object.assign(key.shadow.camera, { left: -100, right: 100, top: 90, bottom: -90, near: 20, far: 320 });
-  key.shadow.bias = -0.0004;
-  key.shadow.normalBias = 0.03;
+  Object.assign(key.shadow.camera, { left: -135, right: 135, top: 115, bottom: -115, near: 20, far: 450 });
+  key.shadow.bias = -0.0006;
+  key.shadow.normalBias = 0.12; // the bowl is large: a bigger offset avoids striped "shadow acne"
 
   const fill = new THREE.DirectionalLight('#c9b8ff', 0.6);
   fill.position.set(-60, 70, -50);

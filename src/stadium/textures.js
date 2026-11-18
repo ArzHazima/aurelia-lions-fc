@@ -29,6 +29,20 @@ export function signTexture(width, height, drawText) {
   });
 }
 
+// A round texture that fades from the center outwards, used for light halos
+export function glowTexture() {
+  const tex = canvasTexture(128, 128, (ctx) => {
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.2, 'rgba(255,255,255,0.55)');
+    g.addColorStop(0.5, 'rgba(255,255,255,0.12)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+  });
+  return tex;
+}
+
 // Draws text, shrinking the font if needed so it fits within maxWidth
 export function fitText(ctx, text, x, y, maxWidth, weight, size) {
   let s = size;

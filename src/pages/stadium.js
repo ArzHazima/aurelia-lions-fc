@@ -2,11 +2,19 @@
 // Three.js is loaded with a dynamic import so the rest of the site stays fast.
 import matches from '../data/matches.json';
 import { createStadiumUI } from '../stadium/ui.js';
-import { formatMatchDate } from '../utils/format.js';
+import { CATEGORIES } from '../stadium/config.js';
+import { formatMatchDate, formatPrice } from '../utils/format.js';
 
 const seatFiles = import.meta.glob('../data/seats/*.json');
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+const HINTS = {
+  overview: isTouch
+    ? 'Tap a section to zoom in · Pinch to zoom'
+    : 'Hover a section for prices · Click to zoom in · Drag to rotate',
+  section: isTouch ? 'Tap a green seat to see the view from it' : 'Hover a seat · Click a green seat to see the view',
+};
 
 export function render(root, { matchId }) {
   const match = matches.find((m) => m.id === matchId);
@@ -22,6 +30,11 @@ export function render(root, { matchId }) {
     return;
   }
 
+  const priceList = Object.values(CATEGORIES)
+    .sort((a, b) => b.price - a.price)
+    .map((c) => `<li><span>${c.label}</span><strong>${formatPrice(c.price)}</strong></li>`)
+    .join('');
+
   root.innerHTML = `
     <section class="stadium-page">
       <div class="stadium-canvas"></div>
@@ -35,7 +48,12 @@ export function render(root, { matchId }) {
         <div class="stadium-legend" aria-label="Seat legend">
           <span><i class="legend-dot is-free"></i>Available</span>
           <span><i class="legend-dot is-taken"></i>Taken</span>
+          <span><i class="legend-dot is-blocked"></i>Not on sale</span>
           <span class="legend-count"></span>
+          <details class="price-list">
+            <summary>Prices</summary>
+            <ul>${priceList}</ul>
+          </details>
         </div>
       </header>
 
@@ -61,22 +79,28 @@ export function render(root, { matchId }) {
       `${stadium.availableCount().toLocaleString('en-US')} of ${stadium.totalCount().toLocaleString('en-US')} free`;
   };
 
-  const showHint = () => {
-    hint.textContent = isTouch
-      ? 'Tap a green seat to see the view · Pinch to zoom'
-      : 'Hover a seat for details · Click a green seat to see the view · Scroll to zoom';
-    hint.hidden = false;
-  };
-
   const ui = createStadiumUI(page, {
     match,
-    onBack: () => stadium?.flyBack(),
+    onAllSections: () => stadium?.backToOverview(),
+    onBack: () => stadium?.backFromSeat(),
     onConfirm: (seat) => {
       stadium?.markTaken(seat);
       updateCount();
     },
-    onDone: () => stadium?.flyBack(),
+    onDone: () => stadium?.backFromSeat(),
   });
+
+  function onModeChange(mode, context) {
+    ui.showTooltip(null);
+    hint.hidden = !HINTS[mode];
+    if (HINTS[mode]) hint.textContent = HINTS[mode];
+    if (mode === 'section') {
+      const stats = context.seats.reduce((n, s) => n + (s.status === 'free' ? 1 : 0), 0);
+      ui.showSectionBar(context, { free: stats });
+    } else ui.hideSectionBar();
+    if (mode === 'seat') ui.showSeatPanel(context);
+    else ui.hideSeatPanel();
+  }
 
   (async () => {
     try {
@@ -88,13 +112,8 @@ export function render(root, { matchId }) {
       stadium = createStadium($('.stadium-canvas'), {
         match,
         occupancy: seatModule.default,
-        onHover: (seat, x, y) => ui.showTooltip(seat, x, y),
-        onSeatSelected: () => {
-          ui.showTooltip(null);
-          hint.hidden = true;
-        },
-        onSeatView: (seat) => ui.showSeatPanel(seat),
-        onOverview: showHint,
+        onHover: (info, x, y) => ui.showTooltip(info, x, y),
+        onModeChange,
       });
       updateCount();
       $('.stadium-loading').classList.add('is-done');
@@ -103,7 +122,6 @@ export function render(root, { matchId }) {
       await stadium.playIntro();
       if (disposed) return;
       $('.skip-intro').hidden = true;
-      showHint();
     } catch (err) {
       console.error(err);
       $('.stadium-loading p').textContent = "Couldn't load the stadium. Your browser may not support WebGL.";
@@ -113,14 +131,12 @@ export function render(root, { matchId }) {
 
   $('.skip-intro').addEventListener('click', () => stadium?.skipIntro());
 
-  // Escape closes the dialog, or leaves the seat view
+  // Escape: close the dialog → leave the seat → leave the section
   const onKey = (e) => {
-    if (e.key !== 'Escape') return;
+    if (e.key !== 'Escape' || !stadium) return;
     if (ui.isModalOpen()) ui.closeModal();
-    else if (stadium?.mode === 'seat') {
-      ui.hideSeatPanel();
-      stadium.flyBack();
-    }
+    else if (stadium.mode === 'seat') stadium.backFromSeat();
+    else if (stadium.mode === 'section') stadium.backToOverview();
   };
   window.addEventListener('keydown', onKey);
 
