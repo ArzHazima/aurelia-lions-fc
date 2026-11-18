@@ -1,7 +1,7 @@
-// The pitch: striped grass, white lines, goals with nets, corner flags and LED boards
+// The pitch: striped grass, white lines, technical areas, goals with nets and corner flags
 import * as THREE from 'three';
 import { COLORS, PITCH } from './config.js';
-import { canvasTexture, signTexture, FONT } from './textures.js';
+import { canvasTexture } from './textures.js';
 
 export function createPitch(maxAnisotropy = 4) {
   const group = new THREE.Group();
@@ -19,7 +19,7 @@ export function createPitch(maxAnisotropy = 4) {
   grass.rotation.x = -Math.PI / 2;
   grass.receiveShadow = true;
 
-  group.add(grass, createGoal(1), createGoal(-1), createCornerFlags(), createAdBoards());
+  group.add(grass, createGoal(1), createGoal(-1), createCornerFlags());
   return group;
 }
 
@@ -97,6 +97,16 @@ function createPitchTexture() {
         ctx.arc(X(sx * hl), Y(sz * hw), 1 * S, 0, Math.PI * 2);
         ctx.stroke();
       }
+    }
+    ctx.restore();
+
+    // Dashed technical areas in front of the two dugouts (north side)
+    ctx.save();
+    ctx.setLineDash([0.5 * S, 0.4 * S]);
+    ctx.lineWidth = 0.1 * S;
+    for (const sx of [-1, 1]) {
+      const x0 = sx > 0 ? 6 : -16;
+      ctx.strokeRect(X(x0), Y(-hw - 4.6), 10 * S, 3.6 * S);
     }
     ctx.restore();
   });
@@ -211,49 +221,6 @@ function createCornerFlags() {
       flag.position.set(x - sx * 0.23, 1.42, z);
       group.add(pole, flag);
     }
-  }
-  return group;
-}
-
-// ---------- LED boards around the pitch ----------
-function createAdBoards() {
-  const group = new THREE.Group();
-  const baseTex = signTexture(1024, 72, (ctx, w, h) => {
-    ctx.font = `800 40px ${FONT}`;
-    ctx.fillStyle = COLORS.gold;
-    ctx.fillText('SAHAR STARS', w * 0.27, h / 2 + 2);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('★', w * 0.5, h / 2 + 2);
-    ctx.fillText('FLAME ARENA', w * 0.73, h / 2 + 2);
-  });
-  baseTex.wrapS = THREE.RepeatWrapping;
-
-  const backMat = new THREE.MeshStandardMaterial({ color: '#141b2b', roughness: 0.8 });
-  const segments = [
-    { x: 0, z: PITCH.width / 2 + 3.2, len: 92 },
-    { x: 0, z: -(PITCH.width / 2 + 3.2), len: 92 },
-    { x: PITCH.length / 2 + 4, z: 0, len: 58 },
-    { x: -(PITCH.length / 2 + 4), z: 0, len: 58 },
-  ];
-
-  for (const seg of segments) {
-    const board = new THREE.Group();
-    board.position.set(seg.x, 0, seg.z);
-    board.rotation.y = Math.atan2(-seg.x, -seg.z); // face the center of the pitch
-
-    const tex = baseTex.clone();
-    tex.repeat.set(seg.len / 14, 1);
-    const screen = new THREE.Mesh(
-      new THREE.PlaneGeometry(seg.len, 0.9),
-      new THREE.MeshBasicMaterial({ map: tex }),
-    );
-    screen.position.set(0, 0.55, 0.01);
-
-    const box = new THREE.Mesh(new THREE.BoxGeometry(seg.len + 0.2, 1.05, 0.25), backMat);
-    box.position.set(0, 0.52, -0.13);
-    box.castShadow = true;
-    board.add(box, screen);
-    group.add(board);
   }
   return group;
 }
