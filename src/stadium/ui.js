@@ -1,6 +1,7 @@
 // The HTML layer on top of the 3D scene: tooltip (section or seat), section bar,
 // seat panel (seat view) and the booking dialog. No real payment happens anywhere.
 import { formatMatchDate, formatPrice } from '../utils/format.js';
+import { CLUB } from '../club.js';
 
 const fmt = (n) => n.toLocaleString('en-US');
 const sectionTitle = (s) => `${s.areaName} · Section ${s.id}`;
@@ -9,7 +10,7 @@ const STATUS_TEXT = { taken: 'Taken', blocked: 'Not on sale' };
 
 function bookingRef() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let ref = 'SS-';
+  let ref = 'AL-';
   for (let i = 0; i < 6; i++) ref += chars[Math.floor(Math.random() * chars.length)];
   return ref;
 }
@@ -131,7 +132,7 @@ export function createStadiumUI(root, { match, onAllSections, onBack, onConfirm,
       <div class="booking-card" role="dialog" aria-modal="true" aria-labelledby="booking-title">
         <span class="eyebrow">Booking summary</span>
         <h2 id="booking-title">${match.home} <em>vs</em> ${match.away}</h2>
-        <p class="booking-card__meta">${match.competition} · ${formatMatchDate(match)} · Flame Arena</p>
+        <p class="booking-card__meta">${match.competition} · ${formatMatchDate(match)} · ${CLUB.stadium}</p>
         <dl class="booking-card__seat">
           <div><dt>Area</dt><dd>${s.areaName}</dd></div>
           <div><dt>Section</dt><dd>${s.id}</dd></div>

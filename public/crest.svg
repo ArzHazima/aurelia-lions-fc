@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 300" role="img" aria-label="Aurelia Lions FC crest – classic">
-  <title>Aurelia Lions FC crest – classic</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 300" role="img" aria-label="Aurelia Lions FC crest">
+  <title>Aurelia Lions FC crest</title>
   <defs>
     <clipPath id="a-inner"><path d="M110 52 L196 74 V156 C196 212 158 246 110 266 C62 246 24 212 24 156 V74 Z" transform="translate(110 160) scale(0.88) translate(-110 -160)"/></clipPath>
     <path id="a-ribbon" d="M20 250 Q110 272 200 250"/>

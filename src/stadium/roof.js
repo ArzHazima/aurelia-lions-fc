@@ -26,7 +26,7 @@ export function createRoof() {
   });
   const steelMat = new THREE.MeshStandardMaterial({ color: '#59627a', roughness: 0.5, metalness: 0.5, transparent: true });
   const fasciaTex = canvasTexture(8, 64, (ctx) => {
-    ctx.fillStyle = COLORS.navy;
+    ctx.fillStyle = COLORS.blue;
     ctx.fillRect(0, 0, 8, 64);
     ctx.fillStyle = COLORS.gold;
     ctx.fillRect(0, 10, 8, 6);
@@ -47,7 +47,7 @@ export function createRoof() {
   );
   slab.receiveShadow = true;
 
-  // Navy/gold fascia along the inner edge
+  // Blue/gold fascia along the inner edge
   const fascia = new THREE.Mesh(ribbon(inner - 0.03, innerY - th - 1.2, innerY + 0.25, { facing: 'in' }), fasciaMat);
 
   // Radial steel trusses on top of the roof

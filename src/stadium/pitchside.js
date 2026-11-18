@@ -14,10 +14,10 @@ const MESSAGE_SECONDS = 6;
 
 function boardMessages(match) {
   return [
-    { bg: COLORS.navy, parts: [['SAHAR STARS', COLORS.gold], ['★', '#ffffff'], ['FLAME ARENA', '#ffffff']] },
-    { bg: '#13284a', parts: [[`WELCOME ${match.away.toUpperCase()} FANS`, '#ffffff']] },
-    { bg: COLORS.gold, parts: [['COME ON YOU STARS!', COLORS.navy], ['★', COLORS.navy]] },
-    { bg: '#13284a', parts: [[match.competition.toUpperCase(), '#9fb0cc'], ['★', COLORS.gold], [`KICK-OFF ${match.time}`, '#ffffff']] },
+    { bg: COLORS.blue, parts: [['AURELIA LIONS', COLORS.gold], ['★', '#ffffff'], ['AURELIA PARK', '#ffffff']] },
+    { bg: COLORS.blueDark, parts: [[`WELCOME ${match.away.toUpperCase()} FANS`, '#ffffff']] },
+    { bg: COLORS.gold, parts: [['COME ON YOU LIONS!', COLORS.navy], ['★', COLORS.blue]] },
+    { bg: COLORS.blueDark, parts: [[match.competition.toUpperCase(), '#dce6ff'], ['★', COLORS.gold], [`KICK-OFF ${match.time}`, '#ffffff']] },
   ];
 }
 
@@ -96,7 +96,7 @@ function createBoards(match) {
 
 function textPlane(text, width, height, color = COLORS.gold) {
   const tex = canvasTexture(512, Math.round((512 * height) / width), (ctx, w, h) => {
-    ctx.fillStyle = COLORS.navy;
+    ctx.fillStyle = COLORS.blue;
     ctx.fillRect(0, 0, w, h);
     ctx.fillStyle = color;
     ctx.font = `800 ${Math.round(h * 0.55)}px ${FONT}`;
@@ -112,7 +112,7 @@ function createTunnel(mats) {
   const z0 = -BOWL.halfZ; // front wall of the main stand
 
   // Housing under the first rows of the stand
-  const housing = new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.9, 4.3), mats.navy);
+  const housing = new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.9, 4.3), mats.blue);
   housing.position.set(0, 1.95, z0 - 2.15);
   const sign = textPlane("PLAYERS' TUNNEL", 4.8, 0.7);
   sign.position.set(0, 3.35, z0 + 0.01);
@@ -147,7 +147,7 @@ function createDugout(x, seatColor, mats) {
 
   const floor = new THREE.Mesh(new THREE.BoxGeometry(W, 0.12, D), mats.dark);
   floor.position.y = 0.06;
-  const back = new THREE.Mesh(new THREE.BoxGeometry(W, H, 0.15), mats.navy);
+  const back = new THREE.Mesh(new THREE.BoxGeometry(W, H, 0.15), mats.blue);
   back.position.set(0, H / 2, -D / 2);
   const roof = new THREE.Mesh(new THREE.BoxGeometry(W + 0.3, 0.08, D + 0.4), mats.plexi);
   roof.position.set(0, H + 0.05, 0.15);
@@ -191,9 +191,10 @@ export function createPitchside(match) {
   group.name = 'pitchside';
   const mats = {
     navy: new THREE.MeshStandardMaterial({ color: COLORS.navy, roughness: 0.6 }),
+    blue: new THREE.MeshStandardMaterial({ color: COLORS.blue, roughness: 0.55 }),
     gold: new THREE.MeshStandardMaterial({ color: COLORS.gold, roughness: 0.4, metalness: 0.3 }),
     dark: new THREE.MeshStandardMaterial({ color: '#1b2233', roughness: 0.9 }),
-    tube: new THREE.MeshStandardMaterial({ color: COLORS.navyLight, roughness: 0.5, side: THREE.DoubleSide }),
+    tube: new THREE.MeshStandardMaterial({ color: COLORS.blue, roughness: 0.5, side: THREE.DoubleSide }),
     plexi: new THREE.MeshStandardMaterial({
       color: '#c6dcff',
       transparent: true,
@@ -208,7 +209,7 @@ export function createPitchside(match) {
     boards.group,
     createTunnel(mats),
     createDugout(-11, COLORS.gold, mats), // home bench
-    createDugout(11, '#c2410c', mats), // away bench
+    createDugout(11, '#c2410c', mats), // away bench (opponent color)
     createFourthOfficial(mats),
   );
   return { group, update: boards.update };

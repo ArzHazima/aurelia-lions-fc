@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { COLORS, ROOF } from './config.js';
 import { segmentById, pointAt } from './bowl/path.js';
 import { canvasTexture, fitText, FONT } from './textures.js';
+import { CLUB } from '../club.js';
 
 const W = 17.6;
 const H = 9.9;
@@ -11,57 +12,40 @@ const CENTER_Y = 37;
 const SCENE_SECONDS = 7;
 const FPS = 15;
 
-// The club crest (same shapes as public/logo.svg, which uses a 64×64 box)
-const SHIELD = new Path2D('M32 3 L57 11 V30 C57 46 46 56 32 61 C18 56 7 46 7 30 V11 Z');
-const STAR = [41, 20, 42.53, 23.9, 46.71, 24.15, 43.47, 26.8, 44.53, 30.85, 41, 28.6, 37.47, 30.85, 38.53, 26.8, 35.29, 24.15, 39.47, 23.9];
+// The real club crest (public/crest.svg), drawn onto the screen canvas
+const crestImg = new Image();
+crestImg.src = CLUB.crest;
+const CREST_ASPECT = 220 / 300; // width / height of the crest's viewBox
 
-function drawCrest(ctx, x, y, size) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(size / 64, size / 64);
-  ctx.fillStyle = COLORS.navy;
-  ctx.fill(SHIELD);
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = COLORS.gold;
-  ctx.stroke(SHIELD);
-  ctx.fillStyle = COLORS.gold;
-  ctx.beginPath();
-  ctx.arc(28, 34, 15, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = COLORS.navy;
-  ctx.beginPath();
-  ctx.arc(34, 30, 13, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  for (let i = 0; i < STAR.length; i += 2) ctx.lineTo(STAR[i], STAR[i + 1]);
-  ctx.fill();
-  ctx.restore();
+function drawCrest(ctx, cx, top, height) {
+  if (!crestImg.complete || !crestImg.naturalWidth) return; // still loading: skip this frame
+  const width = height * CREST_ASPECT;
+  ctx.drawImage(crestImg, cx - width / 2, top, width, height);
 }
 
 function sceneCrest(ctx, w, h, t) {
-  const g = ctx.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, w * 0.6);
-  g.addColorStop(0, '#1d3762');
-  g.addColorStop(1, '#050e1d');
+  const g = ctx.createRadialGradient(w / 2, h * 0.4, 10, w / 2, h / 2, w * 0.6);
+  g.addColorStop(0, COLORS.blue);
+  g.addColorStop(1, COLORS.navy);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, w, h);
-  const size = 150 + Math.sin(t * 2) * 6;
-  drawCrest(ctx, w / 2 - size / 2, 22, size);
+  drawCrest(ctx, w / 2, 14 + Math.sin(t * 2) * 3, 190);
   ctx.fillStyle = COLORS.gold;
-  ctx.font = `800 34px ${FONT}`;
+  ctx.font = `800 30px ${FONT}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('SAHAR STARS FC', w / 2, h - 52);
-  ctx.fillStyle = '#9fb0cc';
-  ctx.font = `500 18px ${FONT}`;
-  ctx.fillText('WELCOME TO FLAME ARENA', w / 2, h - 22);
+  ctx.fillText(CLUB.name.toUpperCase(), w / 2, h - 48);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `600 17px ${FONT}`;
+  ctx.fillText(`WELCOME TO ${CLUB.stadium.toUpperCase()}`, w / 2, h - 20);
 }
 
 function sceneScore(ctx, w, h, t, match) {
-  ctx.fillStyle = '#071428';
+  ctx.fillStyle = COLORS.navy;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = '#13284a';
+  ctx.fillStyle = COLORS.blue;
   ctx.fillRect(0, 0, w, 44);
+  drawCrest(ctx, w / 2, h - 66, 56);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   // Blinking "LIVE" dot
@@ -74,7 +58,7 @@ function sceneScore(ctx, w, h, t, match) {
   ctx.textAlign = 'left';
   ctx.fillText('MATCHDAY', 42, 23);
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#9fb0cc';
+  ctx.fillStyle = '#dce6ff';
   ctx.fillText(match.competition.toUpperCase(), w - 16, 23);
 
   ctx.textAlign = 'center';
@@ -84,9 +68,9 @@ function sceneScore(ctx, w, h, t, match) {
   ctx.fillStyle = COLORS.gold;
   ctx.font = `800 64px ${FONT}`;
   ctx.fillText('0 – 0', w / 2, h * 0.5);
-  ctx.fillStyle = '#9fb0cc';
-  ctx.font = `600 20px ${FONT}`;
-  ctx.fillText(`KICK-OFF ${match.time}`, w / 2, h * 0.8);
+  ctx.fillStyle = '#dce6ff';
+  ctx.font = `600 18px ${FONT}`;
+  ctx.fillText(`KICK-OFF ${match.time}`, w / 2, h * 0.68);
 }
 
 // Little animated match: 22 dots moving around their positions, plus a ball

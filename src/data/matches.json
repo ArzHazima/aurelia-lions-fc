@@ -1,7 +1,7 @@
 [
   {
     "id": "match-1",
-    "home": "Sahar Stars",
+    "home": "Aurelia Lions",
     "away": "Velmora Falcons",
     "competition": "League · Round 12",
     "date": "2026-11-28",
@@ -11,7 +11,7 @@
   },
   {
     "id": "match-2",
-    "home": "Sahar Stars",
+    "home": "Aurelia Lions",
     "away": "Ironmoor Wolves",
     "competition": "League · Round 13",
     "date": "2026-12-05",
@@ -21,7 +21,7 @@
   },
   {
     "id": "match-3",
-    "home": "Sahar Stars",
+    "home": "Aurelia Lions",
     "away": "Quillport Mariners",
     "competition": "Cup · Quarter-final",
     "date": "2026-12-12",
@@ -31,7 +31,7 @@
   },
   {
     "id": "match-4",
-    "home": "Sahar Stars",
+    "home": "Aurelia Lions",
     "away": "Zephyr Hollow FC",
     "competition": "League · Round 15",
     "date": "2026-12-19",

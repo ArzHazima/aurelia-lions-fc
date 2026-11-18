@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "seats": "node scripts/generate-seats.js"
+    "seats": "node scripts/generate-seats.js",
+    "crest": "node scripts/build-crests.js"
   },
   "dependencies": {
     "three": "^0.187.0"

@@ -2,9 +2,10 @@
 // This file has no Three.js import, so the seat-data script (Node) can use it too.
 
 export const COLORS = {
-  navy: '#0b1f3a',
-  navyLight: '#1d3762',
-  gold: '#f2b632',
+  blue: '#1E4FD8', // club primary
+  blueDark: '#163CA8',
+  gold: '#F5B800', // club accent
+  navy: '#0B1E4A', // small accents only
   grassA: '#3d9a48',
   grassB: '#4aab55',
   concrete: '#a3abbe',

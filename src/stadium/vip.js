@@ -29,13 +29,13 @@ function interiorTexture() {
 
 function ledTexture() {
   const tex = canvasTexture(1280, 64, (ctx, w, h) => {
-    ctx.fillStyle = '#071428';
+    ctx.fillStyle = COLORS.blue;
     ctx.fillRect(0, 0, w, h);
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     ctx.font = `800 38px ${FONT}`;
     // Lay the words out side by side with equal gaps so the tile repeats seamlessly
-    const parts = ['SAHAR STARS', '★', 'FLAME ARENA', '★', 'COME ON YOU STARS', '★'];
+    const parts = ['AURELIA LIONS', '★', 'AURELIA PARK', '★', 'COME ON YOU LIONS', '★'];
     const widths = parts.map((p) => ctx.measureText(p).width);
     const gap = (w - widths.reduce((a, b) => a + b, 0)) / parts.length;
     let x = gap / 2;

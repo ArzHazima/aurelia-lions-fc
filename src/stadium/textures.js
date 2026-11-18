@@ -15,12 +15,12 @@ export function canvasTexture(width, height, draw) {
   return texture;
 }
 
-// Text on a dark club-colored sign background
+// Text on a royal-blue club sign background
 export function signTexture(width, height, drawText) {
   return canvasTexture(width, height, (ctx, w, h) => {
     const bg = ctx.createLinearGradient(0, 0, 0, h);
-    bg.addColorStop(0, '#13284a');
-    bg.addColorStop(1, '#071428');
+    bg.addColorStop(0, '#1E4FD8');
+    bg.addColorStop(1, '#163CA8');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, w, h);
     ctx.textAlign = 'center';

@@ -3,6 +3,7 @@
 import matches from '../data/matches.json';
 import { createStadiumUI } from '../stadium/ui.js';
 import { CATEGORIES } from '../stadium/config.js';
+import { CLUB } from '../club.js';
 import { formatMatchDate, formatPrice } from '../utils/format.js';
 
 const seatFiles = import.meta.glob('../data/seats/*.json');
@@ -41,8 +42,9 @@ export function render(root, { matchId }) {
 
       <header class="stadium-topbar">
         <a class="glass-btn" href="#/">← Back</a>
+        <img class="stadium-crest" src="${CLUB.crest}" alt="${CLUB.name}" width="38" height="52" />
         <div class="stadium-title">
-          <span class="eyebrow">Flame Arena · ${formatMatchDate(match)}</span>
+          <span class="eyebrow">${CLUB.stadium} · ${formatMatchDate(match)}</span>
           <h1>${match.home} <em>vs</em> ${match.away}</h1>
         </div>
         <div class="stadium-legend" aria-label="Seat legend">
@@ -58,8 +60,9 @@ export function render(root, { matchId }) {
       </header>
 
       <div class="stadium-loading" role="status">
+        <img class="stadium-loading__crest" src="${CLUB.crest}" alt="" width="120" height="164" />
         <div class="spinner"></div>
-        <p>Building the stadium…</p>
+        <p>Building ${CLUB.stadium}…</p>
       </div>
 
       <button class="glass-btn skip-intro" type="button" hidden>Skip intro</button>

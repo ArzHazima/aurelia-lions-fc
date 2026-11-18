@@ -1,4 +1,4 @@
-# Sahar Stars FC ⭐
+# Aurelia Lions FC 🦁
 
 Website for a fictional football club, with a 3D stadium for choosing your seat.
 Everything is made up: the club, players, stadium and opponents.
@@ -11,6 +11,14 @@ npm run dev
 ```
 
 Then open http://localhost:5173 in your browser.
+
+## Regenerate the crest
+
+```bash
+npm run crest
+```
+
+Writes `public/crest.svg` (also used as the favicon and on the stadium screens).
 
 ## Regenerate seat data
 

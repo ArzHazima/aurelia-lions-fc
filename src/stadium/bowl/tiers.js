@@ -113,19 +113,19 @@ export function createTiers() {
   lowerBody.name = 'lower-tier';
   upperBody.name = 'upper-tier';
 
-  // Navy front wall with a gold top stripe, all the way round
+  // Royal-blue front wall with a gold top stripe, all the way round
   const frontWall = new THREE.Mesh(
     ribbon(-0.02, 0, TIERS.lower.base, { facing: 'in' }),
     new THREE.MeshStandardMaterial({
       map: stripeTexture([
-        [0, 0.82, COLORS.navy],
+        [0, 0.82, COLORS.blue],
         [0.82, 1, COLORS.gold],
       ]),
       roughness: 0.6,
     }),
   );
 
-  // Outer facade: lit concourse windows low down, navy band with a gold line at the top
+  // Outer facade: lit concourse windows low down, blue band with a gold line
   const outD = UPPER_BACK + 0.62;
   const windows = new THREE.Mesh(
     ribbon(outD, 2.5, 8.5, { facing: 'out', uvScale: 8 }),
@@ -136,7 +136,8 @@ export function createTiers() {
     new THREE.MeshStandardMaterial({
       map: stripeTexture([
         [0, 0.08, COLORS.gold],
-        [0.08, 1, COLORS.navy],
+        [0.08, 0.16, COLORS.navy],
+        [0.16, 1, COLORS.blue],
       ]),
       roughness: 0.6,
     }),
