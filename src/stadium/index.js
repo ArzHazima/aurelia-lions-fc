@@ -7,6 +7,8 @@ import { createPitch } from './pitch.js';
 import { buildLayout } from './bowl/layout.js';
 import { createTiers } from './bowl/tiers.js';
 import { createSeats } from './seats.js';
+import { createRoof } from './roof.js';
+import { createVip } from './vip.js';
 import { CameraRig } from './camera.js';
 
 const TAP_DISTANCE = 6; // px – more movement than this is a drag, not a click
@@ -28,8 +30,17 @@ export function createStadium(container, options = {}) {
 
   const tiers = createTiers();
   const seats = createSeats(buildLayout(), occupancy);
-  const animated = []; // objects with update(dt, time)
-  scene.add(createEnvironment(), createPitch(renderer.capabilities.getMaxAnisotropy()), tiers.group, ...seats.meshes);
+  const roof = createRoof();
+  const vip = createVip();
+  const animated = [roof, vip]; // objects with update(dt, time, rig)
+  scene.add(
+    createEnvironment(),
+    createPitch(renderer.capabilities.getMaxAnisotropy()),
+    tiers.group,
+    ...seats.meshes,
+    vip.group,
+    roof.group,
+  );
 
   const rig = new CameraRig(camera, dom);
   rig.applyPose(rig.overviewPose());

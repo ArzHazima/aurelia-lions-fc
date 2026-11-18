@@ -142,6 +142,19 @@ export function createTiers() {
     }),
   );
 
-  group.add(lowerBody, upperBody, createStairs('lower', stairMat), createStairs('upper', stairMat), frontWall, windows, crown);
+  // Vertical cladding fins between the windows and the crown
+  const finTex = canvasTexture(64, 8, (ctx) => {
+    ctx.fillStyle = '#8f99b0';
+    ctx.fillRect(0, 0, 64, 8);
+    ctx.fillStyle = '#5f6880';
+    ctx.fillRect(52, 0, 12, 8);
+  });
+  finTex.wrapS = THREE.RepeatWrapping;
+  const cladding = new THREE.Mesh(
+    ribbon(outD, 8.5, UPPER_TOP - 4.4, { facing: 'out', uvScale: 2.4 }),
+    new THREE.MeshStandardMaterial({ map: finTex, roughness: 0.7 }),
+  );
+
+  group.add(lowerBody, upperBody, createStairs('lower', stairMat), createStairs('upper', stairMat), frontWall, windows, crown, cladding);
   return { group, lowerBody, upperBody, bodies: [lowerBody, upperBody] };
 }
