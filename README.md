@@ -34,7 +34,7 @@ Writes `src/data/seats/<match-id>.json` for every match in `src/data/matches.jso
 npm run build
 ```
 
-The output goes to `dist/` and is configured for GitHub Pages under `/clubStadiom/` (see `vite.config.js`).
+The output goes to `dist/` and is configured for GitHub Pages under `/aurelia-lions-fc/` (see `vite.config.js`). Every push to `main` redeploys automatically via GitHub Actions (`.github/workflows/deploy.yml`).
 
 ## Tech
 
