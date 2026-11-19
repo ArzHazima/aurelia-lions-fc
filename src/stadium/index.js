@@ -13,8 +13,7 @@ import { createPitchside } from './pitchside.js';
 import { createScreens } from './screens.js';
 import { CameraRig } from './camera.js';
 
-const TAP_DISTANCE = 6; // px – more movement than this is a drag, not a click
-const TAP_TIME = 600; // ms
+const TAP_DISTANCE = 5; // px – moving this far or more during a press makes it a drag, not a click
 
 /**
  * @param {HTMLElement} container
@@ -117,23 +116,42 @@ export function createStadium(container, options = {}) {
     rig.flyToSeat(seat).then((ok) => ok && onModeChange?.('seat', seat));
   }
 
+  // Click vs drag: a press counts as a click only if the pointer never moved
+  // TAP_DISTANCE px or more from where it went down (mouse, pen and touch alike).
+  // No time limit – a slow or long press is still a click. A second finger on the
+  // screen (pinch to zoom) cancels the click.
+  const activePointers = new Set();
+
   const onPointerMove = (e) => {
     pointer = { x: e.clientX, y: e.clientY, mouse: e.pointerType === 'mouse', buttons: e.buttons };
     pointerDirty = true;
+    if (down && e.pointerId === down.id) {
+      down.moved = Math.max(down.moved, Math.hypot(e.clientX - down.x, e.clientY - down.y));
+    }
   };
   const onPointerLeave = () => {
     pointer = null;
     if (hoverSection || hoverSeat) clearHover();
   };
   const onPointerDown = (e) => {
-    down = { x: e.clientX, y: e.clientY, t: performance.now() };
+    activePointers.add(e.pointerId);
+    if (activePointers.size > 1) {
+      down = null; // multi-touch gesture, not a click
+      return;
+    }
+    if (e.pointerType === 'mouse' && e.button !== 0) return; // left button only
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: 0 };
+  };
+  const onPointerCancel = (e) => {
+    activePointers.delete(e.pointerId);
+    if (down && e.pointerId === down.id) down = null;
   };
   const onPointerUp = (e) => {
-    if (!down) return;
-    const isTap =
-      Math.hypot(e.clientX - down.x, e.clientY - down.y) < TAP_DISTANCE && performance.now() - down.t < TAP_TIME;
+    activePointers.delete(e.pointerId);
+    if (!down || e.pointerId !== down.id) return;
+    const moved = Math.max(down.moved, Math.hypot(e.clientX - down.x, e.clientY - down.y));
     down = null;
-    if (!isTap) return;
+    if (moved >= TAP_DISTANCE) return; // it was a drag / rotate
 
     if (rig.mode === 'overview') {
       const section = pickSection(e.clientX, e.clientY);
@@ -149,6 +167,7 @@ export function createStadium(container, options = {}) {
   dom.addEventListener('pointerleave', onPointerLeave);
   dom.addEventListener('pointerdown', onPointerDown);
   dom.addEventListener('pointerup', onPointerUp);
+  dom.addEventListener('pointercancel', onPointerCancel);
 
   // ---------- Animation loop ----------
   let last = performance.now();
@@ -206,6 +225,7 @@ export function createStadium(container, options = {}) {
       dom.removeEventListener('pointerleave', onPointerLeave);
       dom.removeEventListener('pointerdown', onPointerDown);
       dom.removeEventListener('pointerup', onPointerUp);
+      dom.removeEventListener('pointercancel', onPointerCancel);
       rig.dispose();
       world.dispose();
       if (import.meta.env.DEV) delete window.__stadium;
