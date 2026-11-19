@@ -1,0 +1,30 @@
+{
+  "players": [
+    { "number": 1, "name": "Matteo Calvari", "position": "Goalkeeper", "country": "italy", "age": 29, "key": true },
+    { "number": 13, "name": "Jonas Brekke", "position": "Goalkeeper", "country": "norway", "age": 24 },
+
+    { "number": 2, "name": "Théo Marchal", "position": "Defender", "country": "france", "age": 26 },
+    { "number": 3, "name": "Seán Dolan", "position": "Defender", "country": "ireland", "age": 28 },
+    { "number": 4, "name": "Daan Verhoef", "position": "Defender", "country": "netherlands", "age": 30 },
+    { "number": 5, "name": "Emeka Obiora", "position": "Defender", "country": "nigeria", "age": 25, "key": true },
+    { "number": 15, "name": "Kacper Wilczak", "position": "Defender", "country": "poland", "age": 22 },
+
+    { "number": 6, "name": "Felix Brandauer", "position": "Midfielder", "country": "austria", "age": 27 },
+    { "number": 8, "name": "Mateo Quintana", "position": "Midfielder", "country": "colombia", "age": 24 },
+    { "number": 10, "name": "Aurelio Santoro", "position": "Midfielder", "country": "italy", "age": 31, "key": true, "captain": true },
+    { "number": 14, "name": "Hugo Lindqvist", "position": "Midfielder", "country": "sweden", "age": 23 },
+    { "number": 16, "name": "Kenji Morisaki", "position": "Midfielder", "country": "japan", "age": 26 },
+
+    { "number": 7, "name": "Jules Lambrecht", "position": "Forward", "country": "belgium", "age": 25 },
+    { "number": 9, "name": "Lennart Vos", "position": "Forward", "country": "germany", "age": 27, "key": true },
+    { "number": 11, "name": "Rafael Montiel", "position": "Forward", "country": "spain", "age": 21 },
+    { "number": 19, "name": "Ilias Benali", "position": "Forward", "country": "morocco", "age": 23 }
+  ],
+  "coach": {
+    "name": "Viktor Hallgren",
+    "role": "Head Coach",
+    "country": "sweden",
+    "since": 2023,
+    "bio": "A former centre-back who joined from the north in 2023. Known for a high-pressing 4-3-3 and for giving academy players their chance, he led the Lions to the top of the table in his third season."
+  }
+}

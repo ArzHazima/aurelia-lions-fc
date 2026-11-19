@@ -4,6 +4,12 @@
 
 const routes = [
   { path: /^\/$/, page: () => import('./pages/home.js') },
+  { path: /^\/squad$/, page: () => import('./pages/squad.js') },
+  {
+    path: /^\/matches(?:\/(upcoming|results))?$/,
+    page: () => import('./pages/matches.js'),
+    params: (m) => ({ tab: m[1] || 'upcoming' }),
+  },
   {
     path: /^\/stadium\/([\w-]+)$/,
     page: () => import('./pages/stadium.js'),

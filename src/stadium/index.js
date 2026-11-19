@@ -173,7 +173,8 @@ export function createStadium(container, options = {}) {
   let last = performance.now();
   let time = 0;
   renderer.setAnimationLoop((now) => {
-    const dt = Math.min((now - last) / 1000, 0.1);
+    // Clamp: the first frame time can be slightly earlier than "last" (negative dt)
+    const dt = Math.min(Math.max((now - last) / 1000, 0), 0.1);
     last = now;
     time += dt;
     rig.update(dt);

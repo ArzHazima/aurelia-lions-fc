@@ -41,7 +41,7 @@ export function render(root, { matchId }) {
       <div class="stadium-canvas"></div>
 
       <header class="stadium-topbar">
-        <a class="glass-btn" href="#/">← Back</a>
+        <a class="glass-btn" href="#/matches">← Matches</a>
         <img class="stadium-crest" src="${CLUB.crest}" alt="${CLUB.name}" width="38" height="52" />
         <div class="stadium-title">
           <span class="eyebrow">${CLUB.stadium} · ${formatMatchDate(match)}</span>

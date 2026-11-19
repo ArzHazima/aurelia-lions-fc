@@ -329,10 +329,6 @@ em {
   font-size: clamp(1.7rem, 4vw, 2.3rem);
 }
 
-#matches {
-  scroll-margin-top: 80px;
-}
-
 .match-list {
   display: grid;
   gap: 14px;
@@ -404,19 +400,6 @@ em {
   display: grid;
   justify-items: end;
   gap: 8px;
-}
-
-.site-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 24px 16px;
-  background: var(--bg-soft);
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.9rem;
-  text-align: center;
 }
 
 /* Simple centered message page (e.g. "match not found") */
@@ -1023,12 +1006,29 @@ em {
 }
 
 @media (max-width: 640px) {
+  /* Phones: brand on one row, the links as a compact row underneath */
+  .site-nav {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 8px;
+  }
+
   .site-nav__brand span {
     font-size: 1rem;
   }
 
+  .site-nav__brand img {
+    height: 38px;
+  }
+
+  .site-nav__links {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .site-nav__links a:not(.btn) {
-    display: none;
+    padding: 6px 10px;
+    font-size: 0.95rem;
   }
 
   .stadium-crest {
