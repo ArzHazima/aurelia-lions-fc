@@ -1,7 +1,6 @@
 // Matches page: "Upcoming" and "Results" tabs, plus a small league table.
 // The open tab is kept in the address (#/matches or #/matches/results).
-import matches from '../data/matches.json';
-import results from '../data/results.json';
+import { matches, results } from '../data/season.js';
 import league from '../data/league.json';
 import { CLUB } from '../club.js';
 import { navbar } from '../components/navbar.js';

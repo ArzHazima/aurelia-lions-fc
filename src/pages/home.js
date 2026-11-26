@@ -1,6 +1,5 @@
 // Home page: hero, next match with countdown, latest news, squad preview, footer
-import matches from '../data/matches.json';
-import news from '../data/news.json';
+import { matches, news } from '../data/season.js';
 import squad from '../data/players.json';
 import { CLUB } from '../club.js';
 import { navbar } from '../components/navbar.js';

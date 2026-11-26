@@ -1,5 +1,6 @@
 // Squad page: players grouped by position, then the coach
 import squad from '../data/players.json';
+import { seasonLabel } from '../data/season.js';
 import { navbar } from '../components/navbar.js';
 import { footer } from '../components/footer.js';
 import { playerCard, coachCard } from '../components/cards.js';
@@ -30,7 +31,7 @@ export function render(root) {
     <main>
       <header class="page-header">
         <div class="page-header__inner reveal">
-          <span class="eyebrow">First team · Season 2026/27</span>
+          <span class="eyebrow">First team · Season ${seasonLabel}</span>
           <h1>The Squad</h1>
           <p>${squad.players.length} Lions, one shirt. Meet the players who wear the blue and gold.</p>
         </div>

@@ -1,6 +1,6 @@
 // Stadium page: the 3D scene plus the HTML overlay on top of it.
 // Three.js is loaded with a dynamic import so the rest of the site stays fast.
-import matches from '../data/matches.json';
+import { matches } from '../data/season.js';
 import { createStadiumUI } from '../stadium/ui.js';
 import { CATEGORIES } from '../stadium/config.js';
 import { CLUB } from '../club.js';
